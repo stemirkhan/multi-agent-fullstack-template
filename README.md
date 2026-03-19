@@ -30,7 +30,6 @@ stack/              # explicit tech and architecture assumptions
 agents/roles/       # canonical internal role manifests
 prompts/common/     # internal role prompts and stack constraints
 workflows/          # default multi-agent execution flows
-scripts/            # install helpers for project and user-scoped Codex reuse
 ```
 
 ## Backend Architecture Rules
@@ -84,7 +83,7 @@ Frontend-oriented skills:
 ## Reuse Modes
 
 - `Project-scoped Codex`: copy `.codex/`, `.agents/`, `stack/`, and `workflows/` into a target repository
-- `User-scoped Codex`: optionally install reusable skills into `$HOME/.agents/skills/`
+- `User-scoped Codex`: optionally copy `.agents/skills/*` into `$HOME/.agents/skills/`
 
 See `QUICKSTART.md` for the exact commands.
 
@@ -95,7 +94,6 @@ This repository now contains:
 - official Codex subagents in `.codex/agents/*.toml`
 - official Codex skill directories in `.agents/skills/*`
 - canonical role manifests
-- Codex install scripts for project and user-scoped reuse
 - baseline prompts, workflows, and stack manifest
 
 The YAML files in `agents/roles/` remain internal source manifests that describe role intent. The copy-ready Codex layer is the `.codex/` plus `.agents/skills/` structure.

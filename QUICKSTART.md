@@ -15,10 +15,10 @@ This repository now follows the official Codex layout:
 
 ## Recommended: Install Into A Project
 
-From this repository:
+From this repository, copy the official Codex layer directly:
 
 ```sh
-./scripts/install-codex-template.sh /absolute/path/to/your-project
+cp -R .codex .agents stack workflows /absolute/path/to/your-project/
 ```
 
 This copies:
@@ -57,13 +57,14 @@ Then open that project in Codex. Codex can discover:
 
 ## Optional: Install Skills Globally
 
-If you want the skills available outside one project, run:
+If you want the skills available outside one project, copy them into your home-level Codex skill directory:
 
 ```sh
-./scripts/install-codex-skills.sh
+mkdir -p "$HOME/.agents/skills"
+cp -R .agents/skills/* "$HOME/.agents/skills/"
 ```
 
-This copies each skill into:
+This makes the skills available in:
 
 ```text
 $HOME/.agents/skills/
@@ -71,6 +72,7 @@ $HOME/.agents/skills/
 
 ## Notes
 
+- If the target project already has `.codex/` or `.agents/`, merge carefully instead of blindly overwriting files.
 - Official docs:
   - https://developers.openai.com/codex/subagents
   - https://developers.openai.com/codex/skills
