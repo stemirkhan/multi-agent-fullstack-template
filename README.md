@@ -7,6 +7,64 @@ Template repository for collecting:
 - shared workflows and prompt layers
 - an explicit stack contract for backend and frontend work
 
+## Quick Subagent Prompts
+
+Paste one of these prompts into Codex from a project that already contains this template.
+
+### Backend Feature
+
+```text
+Spawn subagents for this backend task.
+Use tech_lead_orchestrator to decompose the work first.
+Then use backend_implementer for implementation and reviewer_guard for the final review.
+Wait for all subagents and return one consolidated summary with changed files, tests run, and open risks.
+Task: <describe the backend feature here>
+```
+
+### Bugfix And Reproduction
+
+```text
+Spawn subagents for this bugfix.
+Use qa_debugger to reproduce the issue and identify the failing path.
+Use backend_implementer or frontend_implementer for the fix, depending on the layer involved.
+Use reviewer_guard for a final regression review.
+Wait for all results and summarize root cause, fix, tests, and residual risks.
+Bug: <describe the bug here>
+```
+
+### Code Review
+
+```text
+Spawn subagents for a review of the current branch against main.
+Use reviewer_guard for the main review.
+Use qa_debugger to inspect test gaps and flaky behavior.
+Wait for both subagents and summarize findings by severity, then list missing tests and rollout risks.
+```
+
+### Database Migration
+
+```text
+Spawn subagents for this schema change.
+Use db_migration_owner for the migration plan and migration changes.
+Use backend_implementer to update repositories, DTOs, services, and controllers affected by the schema change.
+Use reviewer_guard for a final migration and rollback review.
+Wait for all subagents and summarize migration steps, compatibility risks, rollback plan, and tests.
+Task: <describe the schema or data change here>
+```
+
+### Fullstack Feature
+
+```text
+Spawn subagents for this fullstack feature.
+Use tech_lead_orchestrator to break the task into backend, frontend, and contract work.
+Use integration_contract_keeper for API and DTO contract alignment.
+Use backend_implementer for backend changes.
+Use frontend_implementer for frontend changes.
+Use reviewer_guard for the final review.
+Wait for all subagents and return one integrated summary with changed files, contract changes, tests run, and open risks.
+Task: <describe the feature here>
+```
+
 ## Target Stack
 
 The repository is now biased toward this default architecture:
