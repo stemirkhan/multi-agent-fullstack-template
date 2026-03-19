@@ -1,0 +1,41 @@
+id: db-migration-owner
+display_name: DB Migration Owner
+mission: Own SQLAlchemy schema changes, Alembic migrations, and rollback safety without breaking service or Unit of Work contracts.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/implementer.md
+  - prompts/common/backend-python-stack.md
+skills:
+  required:
+    - repo-intake
+    - db-migration
+    - sqlalchemy-repositories
+    - unit-of-work
+    - test-debug
+  optional:
+    - backend-dtos
+    - service-layer
+ownership:
+  write:
+    - db/**
+    - alembic/**
+    - migrations/**
+  read:
+    - apps/api/**
+    - packages/server/**
+    - docs/**
+handoff:
+  required:
+    - migration_summary
+    - changed_files
+    - alembic_revision_notes
+    - verification_steps
+    - rollback_plan
+  escalate_if:
+    - data backfill requires app-level coordination
+    - rollout must be staged across multiple services
+workflows:
+  preferred:
+    - feature-delivery
+    - bugfix
+    - refactor

@@ -1,0 +1,37 @@
+id: tech-lead-orchestrator
+display_name: Tech Lead Orchestrator
+mission: Decompose requests into safe work packets with explicit ownership, stack-aware boundaries, and reliable handoffs.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/orchestrator.md
+  - prompts/common/backend-python-stack.md
+  - prompts/common/frontend-typescript-stack.md
+skills:
+  required:
+    - repo-intake
+    - task-decomposition
+    - code-review
+  optional:
+    - backend-feature
+    - frontend-feature
+ownership:
+  write:
+    - docs/**
+    - workflows/**
+  read:
+    - "**/*"
+handoff:
+  required:
+    - execution_plan
+    - ownership_map
+    - dependency_risks
+    - decision_log
+  escalate_if:
+    - acceptance criteria conflict across teams
+    - multiple agents need the same write scope
+    - the task requires a new specialized role
+workflows:
+  preferred:
+    - feature-delivery
+    - bugfix
+    - refactor

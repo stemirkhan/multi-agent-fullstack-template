@@ -1,0 +1,41 @@
+name: fastapi-sqlalchemy-dishka-react
+
+backend:
+  language: python
+  runtime: python-3.12+
+  framework: fastapi
+  orm: sqlalchemy-2.x
+  migrations: alembic
+  dependency_injection: dishka
+  architecture:
+    transport: controllers translate HTTP only
+    application: services own use cases
+    transactions: unit-of-work abstraction
+    persistence: repositories behind unit of work
+    contracts: dedicated DTO layer
+    errors: explicit application and domain exceptions
+    observability: structured logging
+  guardrails:
+    - Controllers should call services, not repositories directly.
+    - Services should not leak ORM sessions into outer layers.
+    - DTOs should not be replaced with raw ORM models in API boundaries.
+    - Transaction boundaries should be explicit and testable.
+
+frontend:
+  language: typescript
+  framework: react
+  ui_components: shadcn-ui
+  ui_primitives: radix-ui
+  styling: tailwindcss
+  server_state: tanstack-query
+  forms: react-hook-form
+  validation: zod
+  architecture:
+    ui: prefer ready-made accessible components before custom primitives
+    data_access: centralize API clients and query hooks
+    composition: keep route-level code thin
+    typing: strong static typing at API and form boundaries
+  guardrails:
+    - Prefer composition of existing UI kit pieces over custom widgets.
+    - Keep network access out of leaf presentation components.
+    - Avoid broad client state stores unless clearly justified.

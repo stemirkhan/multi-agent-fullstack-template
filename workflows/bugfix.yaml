@@ -1,0 +1,22 @@
+id: bugfix
+goal: Reproduce, isolate, fix, and verify a defect with minimal blast radius.
+sequence:
+  - role: tech-lead-orchestrator
+    output: scoped bugfix plan
+  - role: qa-debugger
+    output: reproduction status and failing case
+  - role: integration-contract-keeper
+    optional_when: interface mismatch is involved
+    output: DTO and client contract diagnosis
+  - role: backend-implementer
+    optional_when: backend behavior contributes to the defect
+    output: backend fix across controller, service, repository, or UoW layers
+  - role: frontend-implementer
+    optional_when: frontend behavior contributes to the defect
+    output: frontend fix across component, query, or form layers
+  - role: reviewer-guard
+    output: regression review
+done_when:
+  - the defect is reproduced or its absence is justified
+  - the fix is verified against the failing case
+  - adjacent regressions are checked

@@ -1,0 +1,24 @@
+id: feature-delivery
+goal: Deliver a cross-layer feature with explicit ownership and final review.
+sequence:
+  - role: tech-lead-orchestrator
+    output: scoped plan and ownership map
+  - role: integration-contract-keeper
+    output: DTO and TypeScript client delta or no-op decision
+  - role: backend-implementer
+    optional_when: backend behavior changes
+    output: service, controller, repository, and UoW changes with tests
+  - role: db-migration-owner
+    optional_when: schema changes are required
+    output: Alembic migration and rollback notes
+  - role: frontend-implementer
+    optional_when: UI or client behavior changes
+    output: shadcn/ui-based interface changes and verification notes
+  - role: qa-debugger
+    output: regression sweep and risk notes
+  - role: reviewer-guard
+    output: final findings and release recommendation
+done_when:
+  - acceptance criteria are satisfied
+  - impacted test suites pass
+  - cross-role handoffs are recorded

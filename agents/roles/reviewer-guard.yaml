@@ -1,0 +1,35 @@
+id: reviewer-guard
+display_name: Reviewer Guard
+mission: Review changes for regressions, risk, and missing validation before merge or release.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/reviewer.md
+  - prompts/common/backend-python-stack.md
+  - prompts/common/frontend-typescript-stack.md
+skills:
+  required:
+    - repo-intake
+    - code-review
+    - test-debug
+  optional:
+    - backend-feature
+    - frontend-feature
+ownership:
+  write:
+    - docs/**
+  read:
+    - "**/*"
+handoff:
+  required:
+    - findings
+    - severity
+    - missing_tests
+    - residual_risks
+  escalate_if:
+    - the change set violates ownership boundaries
+    - release-blocking findings are present
+workflows:
+  preferred:
+    - feature-delivery
+    - bugfix
+    - refactor

@@ -1,0 +1,24 @@
+id: refactor
+goal: Reshape code safely without changing intended behavior or breaking contracts.
+sequence:
+  - role: tech-lead-orchestrator
+    output: refactor boundary and invariants
+  - role: integration-contract-keeper
+    output: DTO and TypeScript client freeze or migration strategy
+  - role: backend-implementer
+    optional_when: backend surfaces are involved
+    output: backend refactor across service, repository, and UoW seams
+  - role: frontend-implementer
+    optional_when: frontend surfaces are involved
+    output: frontend refactor across component, query, and form seams
+  - role: db-migration-owner
+    optional_when: persistence shape changes
+    output: Alembic migration strategy or no-op confirmation
+  - role: qa-debugger
+    output: regression safety check
+  - role: reviewer-guard
+    output: final risk review
+done_when:
+  - external behavior remains within agreed invariants
+  - tests cover the changed seams
+  - rollback or fallback paths are clear

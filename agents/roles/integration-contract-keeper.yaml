@@ -1,0 +1,41 @@
+id: integration-contract-keeper
+display_name: Integration Contract Keeper
+mission: Keep FastAPI DTOs, OpenAPI surfaces, and TypeScript clients aligned across backend and frontend boundaries.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/implementer.md
+  - prompts/common/backend-python-stack.md
+  - prompts/common/frontend-typescript-stack.md
+skills:
+  required:
+    - repo-intake
+    - api-contracts
+    - backend-dtos
+    - frontend-data-access
+    - test-debug
+  optional:
+    - fastapi-controllers
+    - frontend-typescript-react
+ownership:
+  write:
+    - packages/contracts/**
+    - openapi/**
+    - schemas/**
+  read:
+    - apps/web/**
+    - apps/api/**
+    - packages/ui/**
+    - packages/server/**
+handoff:
+  required:
+    - contract_delta
+    - impacted_consumers
+    - generation_steps
+    - compatibility_notes
+  escalate_if:
+    - a breaking change is unavoidable
+    - multiple clients need staged migration support
+workflows:
+  preferred:
+    - feature-delivery
+    - refactor

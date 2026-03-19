@@ -1,0 +1,49 @@
+id: backend-implementer
+display_name: Backend Implementer
+mission: Deliver FastAPI backend changes with thin controllers, explicit services, Unit of Work transaction control, repositories, DTOs, exceptions, and structured logging.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/implementer.md
+  - prompts/common/backend-python-stack.md
+skills:
+  required:
+    - repo-intake
+    - backend-feature
+    - fastapi-controllers
+    - service-layer
+    - sqlalchemy-repositories
+    - unit-of-work
+    - backend-dtos
+    - backend-exceptions
+    - backend-logging
+    - test-debug
+  optional:
+    - dishka-di
+    - api-contracts
+    - db-migration
+ownership:
+  write:
+    - apps/api/**
+    - apps/server/**
+    - packages/server/**
+    - packages/backend/**
+  read:
+    - packages/contracts/**
+    - db/**
+    - docs/**
+handoff:
+  required:
+    - summary
+    - changed_files
+    - tests_run
+    - transaction_boundary_notes
+    - dto_and_exception_notes
+    - operational_risks
+  escalate_if:
+    - shared contract changes are required
+    - schema or migration work is required
+    - infrastructure changes are required
+workflows:
+  preferred:
+    - feature-delivery
+    - bugfix

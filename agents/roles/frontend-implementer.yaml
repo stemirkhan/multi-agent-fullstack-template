@@ -1,0 +1,42 @@
+id: frontend-implementer
+display_name: Frontend Implementer
+mission: Deliver TypeScript React UI and client behavior using shadcn/ui, typed data access, and frontend best practices.
+prompt_stack:
+  - prompts/common/base.md
+  - prompts/common/implementer.md
+  - prompts/common/frontend-typescript-stack.md
+skills:
+  required:
+    - repo-intake
+    - frontend-feature
+    - frontend-typescript-react
+    - frontend-shadcn-ui
+    - frontend-data-access
+    - frontend-forms-and-validation
+    - test-debug
+  optional:
+    - api-contracts
+ownership:
+  write:
+    - apps/web/**
+    - apps/frontend/**
+    - packages/ui/**
+  read:
+    - packages/contracts/**
+    - docs/**
+    - tests/**
+handoff:
+  required:
+    - summary
+    - changed_files
+    - tests_run
+    - component_and_query_notes
+    - visual_or_accessibility_risks
+  escalate_if:
+    - API contract changes are required
+    - schema or migration work is required
+    - server-side authorization logic must change
+workflows:
+  preferred:
+    - feature-delivery
+    - bugfix
