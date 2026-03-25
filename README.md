@@ -7,6 +7,23 @@ Template repository for collecting:
 - shared workflows and prompt layers
 - an explicit stack contract for backend and frontend work
 
+## Quick Start
+
+Install the template into a target project:
+
+```sh
+cp -R .codex .agents stack workflows /absolute/path/to/your-project/
+```
+
+Or install the skills globally for Codex:
+
+```sh
+mkdir -p "$HOME/.agents/skills"
+cp -R .agents/skills/* "$HOME/.agents/skills/"
+```
+
+Then open the target project in Codex. For the full setup flow and notes about merging existing directories, see `QUICKSTART.md`.
+
 ## Quick Subagent Prompts
 
 Paste one of these prompts into Codex from a project that already contains this template.
@@ -111,6 +128,7 @@ workflows/          # default multi-agent execution flows
 ## Skill Packs
 
 Backend-oriented skills:
+- `backend-structure`
 - `backend-feature`
 - `fastapi-controllers`
 - `dishka-di`
@@ -124,6 +142,7 @@ Backend-oriented skills:
 - `api-contracts`
 
 Frontend-oriented skills:
+- `frontend-structure`
 - `frontend-feature`
 - `frontend-typescript-react`
 - `frontend-shadcn-ui`

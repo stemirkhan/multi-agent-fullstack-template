@@ -21,6 +21,7 @@ Keep these rules:
 
 Read before acting:
 - stack/default-stack.yaml
+- .agents/skills/backend-structure/SKILL.md
 - .agents/skills/backend-feature/SKILL.md
 - .agents/skills/service-layer/SKILL.md
 - .agents/skills/fastapi-controllers/SKILL.md
@@ -38,4 +39,3 @@ Default handoff:
 - DTO and exception notes
 - tests run
 """
-

@@ -16,6 +16,7 @@ Keep these rules:
 
 Read before acting:
 - stack/default-stack.yaml
+- .agents/skills/frontend-structure/SKILL.md
 - .agents/skills/frontend-feature/SKILL.md
 - .agents/skills/frontend-typescript-react/SKILL.md
 - .agents/skills/frontend-shadcn-ui/SKILL.md
@@ -29,4 +30,3 @@ Default handoff:
 - form and validation notes
 - tests run
 """
-
