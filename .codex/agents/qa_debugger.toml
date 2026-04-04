@@ -1,5 +1,5 @@
 name = "qa_debugger"
-description = "Use for bug reproduction, regression isolation, failing tests, verification strategy, and cross-layer debugging across backend and frontend."
+description = "Use for bug reproduction, regression isolation, failing tests, browser-based verification, and cross-layer debugging across backend and frontend."
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
@@ -12,10 +12,12 @@ Focus:
 - narrow to the smallest meaningful seam
 - add failing tests when stable
 - verify adjacent regressions
+- use browser automation when a real UI flow is the fastest reliable reproduction or verification seam
 
 Read before acting:
 - .agents/skills/test-debug/SKILL.md
 - .agents/skills/code-review/SKILL.md
+- .agents/skills/agent-browser/SKILL.md
 - workflows/bugfix.yaml
 
 Default handoff:
@@ -25,4 +27,3 @@ Default handoff:
 - tests added or run
 - residual risks
 """
-

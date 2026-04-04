@@ -55,6 +55,14 @@ Then open that project in Codex. Codex can discover:
 - project subagents in `.codex/agents/`
 - project skills in `.agents/skills/`
 
+## Optional: Install `agent-browser` CLI
+
+If you plan to run browser automation flows locally, install the CLI separately:
+
+```sh
+npm install -g agent-browser && agent-browser install
+```
+
 ## Optional: Install Skills Globally
 
 If you want the skills available outside one project, copy them into your home-level Codex skill directory:

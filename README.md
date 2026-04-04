@@ -58,6 +58,17 @@ Use qa_debugger to inspect test gaps and flaky behavior.
 Wait for both subagents and summarize findings by severity, then list missing tests and rollout risks.
 ```
 
+### Browser Reproduction Or UI Verification
+
+```text
+Spawn subagents for this browser-heavy task.
+Use tech_lead_orchestrator to decide whether the work belongs to QA, frontend, or both.
+Use qa_debugger for agent-browser-based reproduction, screenshots, login handling, downloads, scraping, and verification.
+Use frontend_implementer only if app code changes are required.
+Wait for all results and summarize browser steps, artifacts, code changes, and residual risks.
+Task: <describe the browser flow or website here>
+```
+
 ### Database Migration
 
 ```text
@@ -148,6 +159,13 @@ Frontend-oriented skills:
 - `frontend-shadcn-ui`
 - `frontend-data-access`
 - `frontend-forms-and-validation`
+
+Cross-cutting skills:
+- `repo-intake`
+- `task-decomposition`
+- `code-review`
+- `test-debug`
+- `agent-browser`
 
 ## Design Rules
 

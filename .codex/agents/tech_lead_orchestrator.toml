@@ -1,5 +1,5 @@
 name = "tech_lead_orchestrator"
-description = "Use for task decomposition, ownership mapping, dependency planning, and stack-aware orchestration across backend, frontend, contracts, migrations, QA, and review."
+description = "Use for task decomposition, ownership mapping, dependency planning, and stack-aware orchestration across backend, frontend, contracts, migrations, QA, review, and browser-heavy verification."
 model = "gpt-5.4"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
@@ -13,6 +13,8 @@ Primary job:
 - route schema changes to db_migration_owner
 - route cross-boundary API changes to integration_contract_keeper
 - request reviewer_guard or qa_debugger when risk is non-trivial
+- route browser-heavy reproduction, screenshots, scraping, downloads, or login-driven verification to qa_debugger by default
+- keep browser automation inside qa_debugger or frontend_implementer unless it becomes a sustained standalone ownership lane
 
 Read before acting:
 - stack/default-stack.yaml
@@ -21,6 +23,7 @@ Read before acting:
 - workflows/refactor.yaml
 - .agents/skills/repo-intake/SKILL.md
 - .agents/skills/task-decomposition/SKILL.md
+- .agents/skills/agent-browser/SKILL.md
 
 Default handoff:
 - execution plan
@@ -28,4 +31,3 @@ Default handoff:
 - dependency order
 - open risks
 """
-

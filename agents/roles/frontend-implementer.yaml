@@ -16,6 +16,7 @@ skills:
     - test-debug
   optional:
     - api-contracts
+    - agent-browser
 ownership:
   write:
     - apps/web/**
