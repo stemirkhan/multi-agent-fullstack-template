@@ -29,10 +29,17 @@ This copies:
 
 into the target project.
 
+Then add the project-level `AGENTS.md` template:
+
+```sh
+cp templates/project-AGENTS.md /absolute/path/to/your-project/AGENTS.md
+```
+
 The result looks like:
 
 ```text
 your-project/
+  AGENTS.md
   .codex/
     config.toml
     agents/
@@ -85,6 +92,7 @@ $HOME/.agents/skills/
 ## Notes
 
 - If the target project already has `.codex/` or `.agents/`, merge carefully instead of blindly overwriting files.
+- If the target project already has `AGENTS.md`, merge carefully instead of overwriting it blindly.
 - Official docs:
   - https://developers.openai.com/codex/subagents
   - https://developers.openai.com/codex/skills

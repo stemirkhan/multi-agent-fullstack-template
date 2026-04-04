@@ -12,6 +12,7 @@ Install the template into a target project:
 
 ```sh
 cp -R .codex .agents stack workflows /absolute/path/to/your-project/
+cp templates/project-AGENTS.md /absolute/path/to/your-project/AGENTS.md
 ```
 
 Or install the skills globally for Codex:
@@ -138,6 +139,7 @@ The canonical stack contract lives in `stack/default-stack.yaml`.
 ## Layout
 
 ```text
+AGENTS.md          # project-local Codex operating instructions
 .codex/             # official Codex config and subagents
 .agents/skills/     # official Codex skills
 stack/              # explicit tech and architecture assumptions
@@ -213,6 +215,7 @@ Cross-cutting skills:
 ## Design Rules
 
 - `.codex/agents/` and `.agents/skills/` are the official Codex layer and the canonical source of truth for agents and skills in this template.
+- `templates/project-AGENTS.md` is the copy-ready project instruction file that template users should add to their target repository as `AGENTS.md`.
 - Skills should stay small and composable.
 - Workflows should describe sequencing between roles, not tool implementation details.
 - Stack-specific constraints belong in prompts and stack manifests, not duplicated in every role.
@@ -230,4 +233,5 @@ This repository now contains:
 - completed stack-aware skills
 - official Codex subagents in `.codex/agents/*.toml`
 - official Codex skill directories in `.agents/skills/*`
+- a copy-ready project `AGENTS.md` template
 - baseline prompts, workflows, and stack manifest
