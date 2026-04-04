@@ -191,6 +191,8 @@ Frontend-oriented skills:
 - `frontend-data-access`
 - `frontend-forms-and-validation`
 
+These frontend skills are taken from `antfu/skills` and then adapted locally to fit this repository's ownership boundaries and workflows.
+
 Cross-cutting skills:
 - `repo-intake`
 - `task-decomposition`
@@ -207,7 +209,7 @@ Cross-cutting skills:
 
 ## External Skill Donors
 
-- `antfu/skills` is the upstream donor direction for this frontend stack, especially for `vue`, `nuxt`, `pinia`, and general web design guidance: https://github.com/antfu/skills
+- `antfu/skills` is the upstream source for the frontend skill layer in this template, especially for `vue`, `nuxt`, `pinia`, and general web design guidance: https://github.com/antfu/skills
 - Keep the local skills concise and adapted to this repository's ownership model instead of mirroring the upstream collection wholesale.
 
 ## Design Rules

@@ -57,7 +57,7 @@ Then open that project in Codex. Codex can discover:
 - project subagents in `.codex/agents/`
 - project skills in `.agents/skills/`
 
-The bundled frontend skill pack in this template is curated for `Vue 3`, `Nuxt 3`, and `Pinia`, with local skills adapted to this repository from ideas in `antfu/skills`.
+The bundled frontend skill pack in this template is curated for `Vue 3`, `Nuxt 3`, and `Pinia`. The frontend skills are taken from `antfu/skills` and then adapted locally to this repository's role and workflow model.
 
 ## Optional: Install `agent-browser` CLI
 
