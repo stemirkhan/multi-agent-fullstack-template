@@ -3,7 +3,6 @@
 Template repository for collecting:
 - reusable skills for coding agents
 - official Codex subagents
-- canonical subagent role manifests
 - shared workflows and prompt layers
 - an explicit stack contract for backend and frontend work
 
@@ -142,7 +141,6 @@ The canonical stack contract lives in `stack/default-stack.yaml`.
 .codex/             # official Codex config and subagents
 .agents/skills/     # official Codex skills
 stack/              # explicit tech and architecture assumptions
-agents/roles/       # canonical internal role manifests
 prompts/common/     # internal role prompts and stack constraints
 workflows/          # default multi-agent execution flows
 ```
@@ -214,8 +212,7 @@ Cross-cutting skills:
 
 ## Design Rules
 
-- `.codex/agents/` and `.agents/skills/` are the copy-ready official Codex layer.
-- `agents/roles/` remains the internal source of truth for role intent.
+- `.codex/agents/` and `.agents/skills/` are the official Codex layer and the canonical source of truth for agents and skills in this template.
 - Skills should stay small and composable.
 - Workflows should describe sequencing between roles, not tool implementation details.
 - Stack-specific constraints belong in prompts and stack manifests, not duplicated in every role.
@@ -233,7 +230,4 @@ This repository now contains:
 - completed stack-aware skills
 - official Codex subagents in `.codex/agents/*.toml`
 - official Codex skill directories in `.agents/skills/*`
-- canonical role manifests
 - baseline prompts, workflows, and stack manifest
-
-The YAML files in `agents/roles/` remain internal source manifests that describe role intent. The copy-ready Codex layer is the `.codex/` plus `.agents/skills/` structure.

@@ -3,8 +3,7 @@
 This repository stores reusable multi-agent scaffolding for fullstack development.
 
 Rules:
-- Keep canonical role definitions in `agents/roles/`.
-- Keep copy-ready official Codex subagents in `.codex/agents/`.
+- Keep official Codex subagents in `.codex/agents/` as the canonical role layer.
 - Keep official Codex skills in `.agents/skills/`.
 - Keep skills vendor-agnostic unless a Codex-specific behavior is unavoidable.
 - Keep each `.agents/skills/*/SKILL.md` concise; move detailed procedures into bundled resources later.
