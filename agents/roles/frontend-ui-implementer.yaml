@@ -1,6 +1,6 @@
-id: frontend-implementer
-display_name: Frontend Implementer
-mission: Deliver mixed TypeScript Vue and Nuxt UI and client behavior when frontend work spans both presentation and data, state, or validation seams.
+id: frontend-ui-implementer
+display_name: Frontend UI Implementer
+mission: Deliver Vue and Nuxt presentation work with strong component composition, responsive layout, styling consistency, and accessibility-focused UI refinements.
 prompt_stack:
   - prompts/common/base.md
   - prompts/common/implementer.md
@@ -11,13 +11,9 @@ skills:
     - frontend-feature
     - vue
     - nuxt
-    - pinia
     - web-design-guidelines
-    - frontend-data-access
-    - frontend-forms-and-validation
     - test-debug
   optional:
-    - api-contracts
     - agent-browser
 ownership:
   write:
@@ -32,14 +28,15 @@ handoff:
   required:
     - summary
     - changed_files
+    - components_introduced_or_extended
+    - visual_and_accessibility_notes
     - tests_run
-    - component_composable_and_state_notes
-    - visual_or_accessibility_risks
   escalate_if:
     - API contract changes are required
-    - schema or migration work is required
+    - async-data, store, or validation logic changes exceed light UI wiring
     - server-side authorization logic must change
 workflows:
   preferred:
     - feature-delivery
     - bugfix
+    - refactor

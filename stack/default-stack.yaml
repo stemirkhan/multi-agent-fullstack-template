@@ -1,4 +1,4 @@
-name: fastapi-sqlalchemy-dishka-react
+name: fastapi-sqlalchemy-dishka-nuxt
 
 backend:
   language: python
@@ -23,19 +23,20 @@ backend:
 
 frontend:
   language: typescript
-  framework: react
-  ui_components: shadcn-ui
-  ui_primitives: radix-ui
-  styling: tailwindcss
-  server_state: tanstack-query
-  forms: react-hook-form
-  validation: zod
+  framework: vue-3
+  meta_framework: nuxt-3
+  state_management: pinia
+  styling: existing-design-system
+  data_access: use-fetch-and-async-data
+  forms: composable-driven
+  validation: schema-driven
   architecture:
-    ui: prefer ready-made accessible components before custom primitives
-    data_access: centralize API clients and query hooks
-    composition: keep route-level code thin
-    typing: strong static typing at API and form boundaries
+    ui: prefer existing components and slots before custom primitives
+    data_access: centralize typed API access in composables and Nuxt data-loading seams
+    composition: keep pages thin and push reusable behavior into composables and stores
+    typing: strong static typing at API, props, emits, and store boundaries
+    state: use Pinia for shared cross-route state, not page-local transient state
   guardrails:
-    - Prefer composition of existing UI kit pieces over custom widgets.
-    - Keep network access out of leaf presentation components.
-    - Avoid broad client state stores unless clearly justified.
+    - Keep $fetch, useFetch, and useAsyncData out of leaf presentation components.
+    - Avoid Pinia stores for local state that belongs in a component or composable.
+    - Keep server-only and client-only logic explicit in Nuxt boundaries.

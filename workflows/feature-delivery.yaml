@@ -4,16 +4,22 @@ sequence:
   - role: tech-lead-orchestrator
     output: scoped plan and ownership map
   - role: integration-contract-keeper
-    output: DTO and TypeScript client delta or no-op decision
+    output: DTO and frontend consumer delta or no-op decision
   - role: backend-implementer
     optional_when: backend behavior changes
     output: service, controller, repository, and UoW changes with tests
   - role: db-migration-owner
     optional_when: schema changes are required
     output: Alembic migration and rollback notes
+  - role: frontend-ui-implementer
+    optional_when: presentation, layout, accessibility, or component composition changes are required
+    output: UI component, layout, and accessibility changes with verification notes
+  - role: frontend-data-validation-implementer
+    optional_when: client data access, async-data, store, form, or validation behavior changes are required
+    output: data-loading, store, form, and validation changes with verification notes
   - role: frontend-implementer
-    optional_when: UI or client behavior changes
-    output: shadcn/ui-based interface changes and verification notes
+    optional_when: frontend work spans both seams but is too small or too tightly coupled to split safely
+    output: mixed frontend changes and verification notes
   - role: qa-debugger
     output: regression sweep and risk notes
   - role: reviewer-guard

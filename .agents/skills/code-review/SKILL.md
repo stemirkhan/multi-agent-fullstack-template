@@ -43,12 +43,12 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 
 ## Frontend Review Rubric
 
-- Existing components or `shadcn/ui` pieces are reused before inventing new primitives.
-- Route and container code stay thin; network logic is not buried in presentation leaves.
-- Query and mutation flows handle loading, error, success, and invalidation paths correctly.
-- Forms use typed validation consistently and map backend errors sanely.
-- Accessibility-sensitive behavior remains intact for dialogs, popovers, tabs, tables, and forms.
-- Responsive behavior is preserved where the feature depends on it.
+- Existing components, layouts, and slots are reused before inventing new primitives.
+- Pages stay thin; data loading, writes, and transport details live in composables, Nuxt data seams, or well-bounded stores.
+- useFetch, useAsyncData, refresh, and store update flows handle loading, error, success, and refresh paths correctly.
+- Forms use schema-driven validation consistently and map backend errors sanely.
+- Accessibility-sensitive behavior remains intact for dialogs, menus, tabs, tables, and forms.
+- Responsive behavior and Nuxt client/server boundaries are preserved where the feature depends on them.
 
 ## Common Regression Patterns
 
@@ -60,7 +60,7 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 - New exceptions are raised but never mapped to stable HTTP responses.
 - Logs were added with raw payloads, secrets, or duplicate noise.
 - A migration is destructive without staged compatibility.
-- A query or mutation path changed without updating invalidation or empty/error states.
+- A fetch, refresh, or store update path changed without updating empty, pending, or error states.
 - New UI abstractions duplicate existing component-system patterns.
 
 ## Testing Review

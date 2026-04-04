@@ -1,6 +1,6 @@
 ---
 name: frontend-forms-and-validation
-description: Use when building forms with React Hook Form and Zod, mapping backend validation to UI, or structuring typed form workflows in the frontend.
+description: Use when building forms with schema-driven validation, mapping backend validation to UI, or structuring typed form workflows in the Vue and Nuxt frontend.
 ---
 
 # Frontend Forms And Validation
@@ -10,15 +10,16 @@ Use this skill when user input is non-trivial and needs typed schema validation,
 ## Responsibilities
 
 - Keep form state, validation, and submission behavior explicit.
-- Use `React Hook Form` and `Zod` as the default stack for non-trivial forms.
+- Prefer schema-driven validation, using `Zod` or the project's established validation library.
+- Use composables or the project's chosen form helper consistently instead of ad hoc field state.
 - Map backend validation and conflict errors into stable field or form-level feedback.
 
 ## Default Structure
 
-- Zod schema for form shape and client-side validation.
-- React Hook Form for state and field registration.
-- Submit handler owned by the feature layer or mutation hook.
-- UI components composed from existing input primitives and `shadcn/ui` form patterns.
+- Schema for form shape and client-side validation.
+- Composable, local component state, or project-standard form helper for field registration and submit flow.
+- Submit handler owned by the feature layer, composable, or write action.
+- UI components composed from existing input primitives and the project design system.
 
 ## Rules
 
@@ -27,6 +28,7 @@ Use this skill when user input is non-trivial and needs typed schema validation,
 - Do not duplicate the same validation logic across random components.
 - Use field-level validation for user guidance and backend error mapping for authoritative failures.
 - Keep submission side effects explicit: reset, redirect, invalidate, or stay dirty.
+- Keep client-only form behavior explicit when a Nuxt page also relies on server-rendered data.
 
 ## Backend Error Mapping
 

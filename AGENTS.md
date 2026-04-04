@@ -12,4 +12,4 @@ Rules:
 - Prefer adding new roles only when ownership boundaries are materially different.
 - Treat `stack/default-stack.yaml` as the default architectural contract when creating or refining skills.
 - For backend assumptions, prefer FastAPI controllers, service layer orchestration, Unit of Work transaction control, repositories, DTOs, explicit exceptions, and structured logging.
-- For frontend assumptions, prefer TypeScript React with `shadcn/ui`, `Radix UI`, `Tailwind CSS`, `TanStack Query`, `React Hook Form`, and `Zod`.
+- For frontend assumptions, prefer TypeScript Vue with `Nuxt`, `Pinia`, composables, explicit server/client boundaries, and schema-driven validation.

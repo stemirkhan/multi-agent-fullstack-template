@@ -39,7 +39,9 @@ your-project/
       backend_implementer.toml
       db_migration_owner.toml
       devops_release_owner.toml
+      frontend_data_validation_implementer.toml
       frontend_implementer.toml
+      frontend_ui_implementer.toml
       integration_contract_keeper.toml
       qa_debugger.toml
       reviewer_guard.toml
@@ -54,6 +56,8 @@ your-project/
 Then open that project in Codex. Codex can discover:
 - project subagents in `.codex/agents/`
 - project skills in `.agents/skills/`
+
+The bundled frontend skill pack in this template is curated for `Vue 3`, `Nuxt 3`, and `Pinia`, with local skills adapted to this repository from ideas in `antfu/skills`.
 
 ## Optional: Install `agent-browser` CLI
 

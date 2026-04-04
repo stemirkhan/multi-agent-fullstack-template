@@ -19,7 +19,7 @@ Use this skill when a change crosses the backend/frontend contract boundary and 
 2. Decide whether the change is additive, behavior-changing, or breaking.
 3. Update backend DTOs and transport definitions first.
 4. Regenerate or update TypeScript client types if the project uses them.
-5. Update frontend consumers and query or mutation hooks.
+5. Update frontend consumers and any affected data-loading or write seams.
 6. Verify serialization, error mapping, and backward compatibility.
 
 ## Rules

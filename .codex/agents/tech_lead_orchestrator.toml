@@ -14,6 +14,10 @@ Primary job:
 - route cross-boundary API changes to integration_contract_keeper
 - request reviewer_guard or qa_debugger when risk is non-trivial
 - route browser-heavy reproduction, screenshots, scraping, downloads, or login-driven verification to qa_debugger by default
+- route presentation, component composition, responsiveness, and accessibility-heavy work to frontend_ui_implementer
+- route client-side API, async-data, store, form, and validation-heavy work to frontend_data_validation_implementer
+- use frontend_implementer only when frontend work is too small or too tightly coupled to split safely
+- when both frontend specialists are used, assign explicit file ownership so they do not collide in the same files
 - keep browser automation inside qa_debugger or frontend_implementer unless it becomes a sustained standalone ownership lane
 
 Read before acting:

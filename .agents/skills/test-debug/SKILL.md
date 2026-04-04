@@ -39,7 +39,7 @@ Use this skill when a bug needs to be reproduced, narrowed, and verified instead
 ## Frontend Guidance
 
 - Reproduce at the user-visible flow level before diving into component internals.
-- Check query, mutation, form, and component boundaries explicitly.
+- Check async-data, write, form, store, and component boundaries explicitly.
 - Verify loading, empty, error, success, and responsive states when async behavior changed.
 
 ## Verification Checklist

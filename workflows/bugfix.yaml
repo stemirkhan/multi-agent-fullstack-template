@@ -11,9 +11,15 @@ sequence:
   - role: backend-implementer
     optional_when: backend behavior contributes to the defect
     output: backend fix across controller, service, repository, or UoW layers
+  - role: frontend-ui-implementer
+    optional_when: the defect is primarily in presentation, interaction rendering, responsiveness, or accessibility behavior
+    output: frontend UI fix across component, layout, or accessibility seams
+  - role: frontend-data-validation-implementer
+    optional_when: the defect is primarily in client data flow, async-data, store, form, or validation behavior
+    output: frontend client-logic fix across typed API, composable, store, or form seams
   - role: frontend-implementer
-    optional_when: frontend behavior contributes to the defect
-    output: frontend fix across component, query, or form layers
+    optional_when: frontend behavior contributes to the defect but the failing path is too small or too coupled to split safely
+    output: mixed frontend fix across UI and client behavior seams
   - role: reviewer-guard
     output: regression review
 done_when:

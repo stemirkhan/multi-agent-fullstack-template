@@ -4,13 +4,19 @@ sequence:
   - role: tech-lead-orchestrator
     output: refactor boundary and invariants
   - role: integration-contract-keeper
-    output: DTO and TypeScript client freeze or migration strategy
+    output: DTO and frontend consumer freeze or migration strategy
   - role: backend-implementer
     optional_when: backend surfaces are involved
     output: backend refactor across service, repository, and UoW seams
+  - role: frontend-ui-implementer
+    optional_when: presentation components, layout composition, styling structure, or accessibility seams are involved
+    output: frontend UI refactor across component and layout seams
+  - role: frontend-data-validation-implementer
+    optional_when: client data access, async-data, store, form, or validation seams are involved
+    output: frontend client-logic refactor across typed data, store, and validation seams
   - role: frontend-implementer
-    optional_when: frontend surfaces are involved
-    output: frontend refactor across component, query, and form seams
+    optional_when: frontend surfaces are involved but remain too small or too coupled to split safely
+    output: mixed frontend refactor across component, composable, store, and form seams
   - role: db-migration-owner
     optional_when: persistence shape changes
     output: Alembic migration strategy or no-op confirmation
