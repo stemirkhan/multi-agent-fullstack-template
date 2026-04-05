@@ -24,6 +24,8 @@ cp -R .agents/skills/* "$HOME/.agents/skills/"
 
 Then open the target project in Codex. For the full setup flow and notes about merging existing directories, see `QUICKSTART.md`.
 
+If you only need one side of the template, `QUICKSTART.md` also includes `backend-only` and `frontend-only` installation commands.
+
 ## Quick Subagent Prompts
 
 Paste one of these prompts into Codex from a project that already contains this template.
@@ -224,6 +226,7 @@ Cross-cutting skills:
 
 - `Project-scoped Codex`: copy `.codex/`, `.agents/`, `stack/`, and `workflows/` into a target repository
 - `User-scoped Codex`: optionally copy `.agents/skills/*` into `$HOME/.agents/skills/`
+- `Partial install`: use the `backend-only` or `frontend-only` commands in `QUICKSTART.md` when the target project does not need the full role set
 
 See `QUICKSTART.md` for the exact commands.
 
@@ -234,4 +237,5 @@ This repository now contains:
 - official Codex subagents in `.codex/agents/*.toml`
 - official Codex skill directories in `.agents/skills/*`
 - a copy-ready project `AGENTS.md` template
+- copy-ready `AGENTS.md` variants for backend-only and frontend-only installs
 - baseline prompts, workflows, and stack manifest

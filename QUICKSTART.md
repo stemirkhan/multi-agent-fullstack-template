@@ -66,6 +66,38 @@ Then open that project in Codex. Codex can discover:
 
 The bundled frontend skill pack in this template is curated for `Vue 3`, `Nuxt 3`, and `Pinia`. The frontend skills are taken from `antfu/skills` and then adapted locally to this repository's role and workflow model.
 
+## Backend-Only Install
+
+If the target project is backend-only, install just the backend-oriented layer:
+
+```sh
+TARGET=/absolute/path/to/your-project
+mkdir -p "$TARGET/.codex/agents" "$TARGET/.agents/skills"
+cp .codex/config.toml "$TARGET/.codex/config.toml"
+cp .codex/agents/{backend_implementer.toml,db_migration_owner.toml,devops_release_owner.toml,qa_debugger.toml,reviewer_guard.toml,tech_lead_orchestrator.toml} "$TARGET/.codex/agents/"
+cp -R .agents/skills/{agent-browser,api-contracts,backend-dtos,backend-exceptions,backend-feature,backend-logging,backend-structure,code-review,db-migration,devops-release,dishka-di,fastapi-controllers,repo-intake,service-layer,sqlalchemy-repositories,task-decomposition,test-debug,unit-of-work} "$TARGET/.agents/skills/"
+cp -R stack "$TARGET/"
+cp templates/project-AGENTS.backend.md "$TARGET/AGENTS.md"
+```
+
+This partial install intentionally skips `workflows/`, because the bundled workflow files assume the full multi-agent role set.
+
+## Frontend-Only Install
+
+If the target project is frontend-only, install just the frontend-oriented layer:
+
+```sh
+TARGET=/absolute/path/to/your-project
+mkdir -p "$TARGET/.codex/agents" "$TARGET/.agents/skills"
+cp .codex/config.toml "$TARGET/.codex/config.toml"
+cp .codex/agents/{frontend_data_validation_implementer.toml,frontend_implementer.toml,frontend_ui_implementer.toml,qa_debugger.toml,reviewer_guard.toml,tech_lead_orchestrator.toml} "$TARGET/.codex/agents/"
+cp -R .agents/skills/{agent-browser,code-review,frontend-data-access,frontend-feature,frontend-forms-and-validation,frontend-structure,nuxt,pinia,repo-intake,task-decomposition,test-debug,vue,web-design-guidelines} "$TARGET/.agents/skills/"
+cp -R stack "$TARGET/"
+cp templates/project-AGENTS.frontend.md "$TARGET/AGENTS.md"
+```
+
+This partial install also skips `workflows/`, because the bundled workflow files assume the full multi-agent role set.
+
 ## Optional: Install `agent-browser` CLI
 
 If you plan to run browser automation flows locally, install the CLI separately:
