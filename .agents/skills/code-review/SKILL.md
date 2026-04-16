@@ -44,11 +44,11 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 ## Frontend Review Rubric
 
 - Existing components, layouts, and slots are reused before inventing new primitives.
-- Pages stay thin; data loading, writes, and transport details live in composables, Nuxt data seams, or well-bounded stores.
-- useFetch, useAsyncData, refresh, and store update flows handle loading, error, success, and refresh paths correctly.
+- Route views stay thin; data loading, writes, and transport details live in composables, feature data-access seams, or well-bounded stores.
+- Composable request, refresh, and store update flows handle loading, error, success, and refresh paths correctly.
 - Forms use schema-driven validation consistently and map backend errors sanely.
 - Accessibility-sensitive behavior remains intact for dialogs, menus, tabs, tables, and forms.
-- Responsive behavior and Nuxt client/server boundaries are preserved where the feature depends on them.
+- Responsive behavior and view or composable boundaries are preserved where the feature depends on them.
 
 ## Common Regression Patterns
 

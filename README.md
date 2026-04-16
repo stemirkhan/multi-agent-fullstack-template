@@ -2,11 +2,11 @@
 
 ![Codex](https://img.shields.io/badge/Codex-subagents%20%2B%20skills-412991)
 ![Backend](https://img.shields.io/badge/backend-FastAPI%20%2B%20SQLAlchemy-0f766e)
-![Frontend](https://img.shields.io/badge/frontend-Vue%20%2B%20Nuxt%20%2B%20Pinia-1d4ed8)
+![Frontend](https://img.shields.io/badge/frontend-Vue%20%2B%20Pinia-1d4ed8)
 ![Install](https://img.shields.io/badge/install-full%20or%20partial-f59e0b)
 ![Browser](https://img.shields.io/badge/browser-agent--browser%20optional-64748b)
 
-> Copy-ready Codex subagents, skills, workflows, and project `AGENTS.md` templates for a FastAPI + Vue/Nuxt fullstack stack.
+> Copy-ready Codex subagents, skills, workflows, and project `AGENTS.md` templates for a FastAPI + Vue fullstack stack.
 
 This repository packages a reusable multi-agent setup for projects that want:
 - official Codex subagents in `.codex/agents/`
@@ -91,7 +91,7 @@ workflows/                   # sequencing and handoff contracts
 | --- | --- | --- |
 | `tech_lead_orchestrator` | task decomposition, ownership, sequencing | the task spans multiple files, layers, or specialists |
 | `backend_implementer` | FastAPI, services, repositories, DTOs, exceptions, logging, UoW | backend behavior changes |
-| `frontend_ui_implementer` | Vue/Nuxt presentation, layout, styling, accessibility | the work is primarily visual or interaction-heavy |
+| `frontend_ui_implementer` | Vue presentation, route-view composition, styling, accessibility | the work is primarily visual or interaction-heavy |
 | `frontend_data_validation_implementer` | typed API access, async-data, Pinia, forms, validation | the work is primarily client logic or data flow |
 | `frontend_implementer` | tightly coupled mixed frontend work | the task is too small or coupled to split safely |
 | `integration_contract_keeper` | DTO, OpenAPI, and frontend-consumer alignment | request or response contracts change |
@@ -106,7 +106,7 @@ workflows/                   # sequencing and handoff contracts
 | --- | --- |
 | multi-step planning across layers | `tech_lead_orchestrator` |
 | FastAPI/backend implementation | `backend_implementer` |
-| Vue/Nuxt UI, layout, styling, accessibility | `frontend_ui_implementer` |
+| Vue UI, route-view composition, styling, accessibility | `frontend_ui_implementer` |
 | frontend data flow, forms, Pinia, validation | `frontend_data_validation_implementer` |
 | mixed but small frontend changes | `frontend_implementer` |
 | API contract drift or DTO sync | `integration_contract_keeper` |
@@ -146,7 +146,7 @@ Task: <describe the backend feature here>
 
 ```text
 Spawn subagents for this frontend UI task.
-Use frontend_ui_implementer for Vue component composition, Nuxt page or layout presentation, styling, responsiveness, and accessibility work.
+Use frontend_ui_implementer for Vue component composition, route-view or app-shell presentation, styling, responsiveness, and accessibility work.
 Use reviewer_guard for the final review.
 Wait for both subagents and summarize changed files, UI notes, tests, and residual risks.
 Task: <describe the UI change here>
@@ -159,7 +159,7 @@ Task: <describe the UI change here>
 
 ```text
 Spawn subagents for this frontend client-logic task.
-Use frontend_data_validation_implementer for typed API access, Nuxt async-data flows, Pinia state, and schema-driven validation changes.
+Use frontend_data_validation_implementer for typed API access, composable-driven data flows, Pinia state, and schema-driven validation changes.
 Use integration_contract_keeper if request or response contracts might change.
 Use reviewer_guard for the final review.
 Wait for all results and summarize changed files, client-logic notes, tests, and residual risks.
@@ -270,16 +270,15 @@ Backend rules:
 | Concern | Default |
 | --- | --- |
 | Framework | `Vue 3 + TypeScript` |
-| App layer | `Nuxt 3` |
 | Shared state | `Pinia` |
-| Data flow | typed API clients plus `useFetch` and `useAsyncData` through composables |
+| Data flow | typed API clients and composable-driven read and write flows |
 | Forms | composable-first with schema-driven validation |
 
 Frontend rules:
-- keep Nuxt pages and layouts thin
+- keep route views and screen-level entry components thin
 - move reusable behavior into composables and shared components
 - keep typed API access in dedicated data-access seams
-- use `Pinia` only when state truly crosses routes or features
+- use `Pinia` only when state truly crosses features or views
 - keep forms schema-driven and backend error mapping explicit
 
 The canonical stack contract lives in [`stack/default-stack.yaml`](stack/default-stack.yaml).
@@ -304,18 +303,22 @@ Frontend-oriented skills:
 - `frontend-structure`
 - `frontend-feature`
 - `vue`
-- `nuxt`
 - `pinia`
 - `web-design-guidelines`
 - `frontend-data-access`
 - `frontend-forms-and-validation`
 
 Cross-cutting skills:
+- `project-conventions`
 - `repo-intake`
 - `task-decomposition`
 - `code-review`
+- `codex-review-loop`
 - `test-debug`
 - `agent-browser`
+
+Advanced optional skills:
+- `codex-review-loop` for deeper PR, branch, or uncommitted-change audits through Codex CLI
 
 Frontend skill source:
 - the frontend skills are taken from [`antfu/skills`](https://github.com/antfu/skills)

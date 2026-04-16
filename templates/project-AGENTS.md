@@ -12,8 +12,8 @@ This file is meant to be copied into a target project as `AGENTS.md`.
 
 - Use `tech_lead_orchestrator` first when the task spans multiple files, layers, or agents.
 - Use `backend_implementer` for FastAPI, services, repositories, DTOs, exceptions, logging, and Unit of Work changes.
-- Use `frontend_ui_implementer` for Vue and Nuxt presentation work: components, layouts, styling, accessibility, and responsive behavior.
-- Use `frontend_data_validation_implementer` for typed API access, Nuxt async-data flows, Pinia state, forms, and schema-driven validation.
+- Use `frontend_ui_implementer` for Vue presentation work: components, route views, app shell, styling, accessibility, and responsive behavior.
+- Use `frontend_data_validation_implementer` for typed API access, composable-driven data flows, Pinia state, forms, and schema-driven validation.
 - Use `frontend_implementer` only for small frontend tasks that are too coupled to split safely.
 - Use `integration_contract_keeper` when request, response, OpenAPI, or frontend-consumer contracts change.
 - Use `db_migration_owner` for schema changes, Alembic migrations, and rollback planning.
@@ -40,10 +40,10 @@ Backend defaults:
 - Exceptions and logging stay explicit and structured.
 
 Frontend defaults:
-- TypeScript-first Vue with Nuxt 3.
-- Keep pages and layouts thin.
+- TypeScript-first Vue 3.
+- Keep route views and screen-level entry components thin.
 - Put reusable behavior in composables.
-- Use Pinia only for shared client state that truly crosses routes or features.
+- Use Pinia only for shared client state that truly crosses features or views.
 - Keep typed API access in dedicated data-access seams.
 - Keep forms schema-driven and backend error mapping explicit.
 

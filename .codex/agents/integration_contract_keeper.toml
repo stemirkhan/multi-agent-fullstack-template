@@ -15,10 +15,10 @@ Focus:
 
 Read before acting:
 - stack/default-stack.yaml
+- .agents/skills/project-conventions/SKILL.md
 - .agents/skills/api-contracts/SKILL.md
 - .agents/skills/backend-dtos/SKILL.md
 - .agents/skills/frontend-data-access/SKILL.md
-- .agents/skills/nuxt/SKILL.md
 
 Default handoff:
 - contract surfaces changed

@@ -15,6 +15,7 @@ Keep these rules:
 
 Read before acting:
 - .agents/skills/code-review/SKILL.md
+- .agents/skills/project-conventions/SKILL.md
 - stack/default-stack.yaml
 - workflows/feature-delivery.yaml
 - workflows/bugfix.yaml
@@ -25,4 +26,3 @@ Default handoff:
 - missing tests
 - residual risks
 """
-

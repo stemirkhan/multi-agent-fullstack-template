@@ -1,6 +1,6 @@
 ---
 name: pinia
-description: Use when implementing shared client state, store actions, derived state, or store-boundary decisions in the Vue and Nuxt frontend.
+description: Use when implementing shared client state, store actions, derived state, or store-boundary decisions in the Vue frontend.
 ---
 
 # Pinia

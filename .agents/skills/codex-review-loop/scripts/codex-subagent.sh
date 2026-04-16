@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Thin wrapper around `codex exec review`.
+#
+# Examples:
+#   bash .agents/skills/codex-review-loop/scripts/codex-subagent.sh --base main
+#   bash .agents/skills/codex-review-loop/scripts/codex-subagent.sh --uncommitted
+#   cat .agents/skills/codex-review-loop/references/prompts/adversarial-review.md | \
+#     bash .agents/skills/codex-review-loop/scripts/codex-subagent.sh --uncommitted
+
+CODEX_ARGS=()
+HAS_DIFF_TARGET=false
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --base|--commit)
+      CODEX_ARGS+=("$1" "$2")
+      HAS_DIFF_TARGET=true
+      shift 2
+      ;;
+    --uncommitted)
+      CODEX_ARGS+=("$1")
+      HAS_DIFF_TARGET=true
+      shift
+      ;;
+    *)
+      echo "Warning: unknown argument '$1' was passed through" >&2
+      CODEX_ARGS+=("$1")
+      shift
+      ;;
+  esac
+done
+
+CODEX_ARGS+=("--full-auto" "--ephemeral")
+
+if [[ -n "${CODEX_REVIEW_MODEL:-}" ]]; then
+  CODEX_ARGS+=("-m" "$CODEX_REVIEW_MODEL")
+fi
+
+if [[ -n "${CODEX_REVIEW_REASONING:-}" ]]; then
+  CODEX_ARGS+=("-c" "model_reasoning_effort=\"$CODEX_REVIEW_REASONING\"")
+fi
+
+if [ -p /dev/stdin ]; then
+  if $HAS_DIFF_TARGET; then
+    cat > /dev/null
+    echo "Note: stdin prompt ignored for diff-target review mode" >&2
+  else
+    CODEX_ARGS+=("-")
+  fi
+fi
+
+set +e
+OUTPUT=$(codex exec review "${CODEX_ARGS[@]}" 2>&1)
+EXIT_CODE=$?
+set -e
+
+if [ $EXIT_CODE -ne 0 ]; then
+  echo "Codex review failed (exit $EXIT_CODE):"
+  echo "$OUTPUT"
+  exit $EXIT_CODE
+fi
+
+PARSED=$(echo "$OUTPUT" | awk '
+/^codex$/ { buf=""; capturing=1; next }
+/^tokens used$/ { capturing=0; next }
+capturing { buf = buf $0 "\n" }
+END { printf "%s", buf }
+')
+
+if [ -n "$PARSED" ]; then
+  echo "$PARSED"
+else
+  echo "$OUTPUT"
+fi
+
+exit 0

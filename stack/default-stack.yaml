@@ -1,4 +1,4 @@
-name: fastapi-sqlalchemy-dishka-nuxt
+name: fastapi-sqlalchemy-dishka-vue
 
 backend:
   language: python
@@ -24,19 +24,18 @@ backend:
 frontend:
   language: typescript
   framework: vue-3
-  meta_framework: nuxt-3
   state_management: pinia
   styling: existing-design-system
-  data_access: use-fetch-and-async-data
+  data_access: composable-driven-typed-clients
   forms: composable-driven
   validation: schema-driven
   architecture:
     ui: prefer existing components and slots before custom primitives
-    data_access: centralize typed API access in composables and Nuxt data-loading seams
-    composition: keep pages thin and push reusable behavior into composables and stores
+    data_access: centralize typed API access in composables and feature-level data-access modules
+    composition: keep route views and screen-level entry components thin and push reusable behavior into composables and stores
     typing: strong static typing at API, props, emits, and store boundaries
-    state: use Pinia for shared cross-route state, not page-local transient state
+    state: use Pinia for shared cross-feature state, not screen-local transient state
   guardrails:
-    - Keep $fetch, useFetch, and useAsyncData out of leaf presentation components.
+    - Keep fetch calls and API-client usage out of leaf presentation components.
     - Avoid Pinia stores for local state that belongs in a component or composable.
-    - Keep server-only and client-only logic explicit in Nuxt boundaries.
+    - Keep browser-only behavior and environment-specific integrations explicit at the feature boundary.

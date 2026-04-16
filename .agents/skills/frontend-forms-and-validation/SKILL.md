@@ -1,6 +1,6 @@
 ---
 name: frontend-forms-and-validation
-description: Use when building forms with schema-driven validation, mapping backend validation to UI, or structuring typed form workflows in the Vue and Nuxt frontend.
+description: Use when building forms with schema-driven validation, mapping backend validation to UI, or structuring typed form workflows in the Vue frontend.
 ---
 
 # Frontend Forms And Validation
@@ -28,7 +28,7 @@ Use this skill when user input is non-trivial and needs typed schema validation,
 - Do not duplicate the same validation logic across random components.
 - Use field-level validation for user guidance and backend error mapping for authoritative failures.
 - Keep submission side effects explicit: reset, redirect, invalidate, or stay dirty.
-- Keep client-only form behavior explicit when a Nuxt page also relies on server-rendered data.
+- Keep form lifecycle and preloaded data dependencies explicit when a screen also relies on fetched or stored state.
 
 ## Backend Error Mapping
 

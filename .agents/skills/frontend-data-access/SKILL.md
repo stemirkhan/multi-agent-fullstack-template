@@ -1,6 +1,6 @@
 ---
 name: frontend-data-access
-description: Use when implementing typed API clients, Nuxt data-loading flows, writes, refresh strategy, or server-state boundaries in the TypeScript frontend.
+description: Use when implementing typed API clients, composable-driven data flows, writes, refresh strategy, or server-state boundaries in the TypeScript frontend.
 ---
 
 # Frontend Data Access
@@ -17,7 +17,7 @@ Use this skill when frontend code needs to fetch, mutate, refresh, or synchroniz
 ## Default Structure
 
 - One thin API client layer for request construction and response typing.
-- Composables or useAsyncData or useFetch wrappers for read flows.
+- Composables or project-standard query wrappers for read flows.
 - Focused write actions, usually via typed client helpers or feature composables.
 - Feature code composes those seams and maps them into UI behavior.
 
@@ -48,11 +48,11 @@ Use this skill when frontend code needs to fetch, mutate, refresh, or synchroniz
 - Normalize transport and contract failures enough for the UI to react consistently.
 - Keep user-facing messaging separate from low-level response parsing where possible.
 - Do not swallow errors that should affect UX or telemetry.
-- Keep Nuxt server/client execution context explicit when handling auth, cookies, or environment-specific behavior.
+- Keep auth, cookies, storage, or environment-specific behavior explicit when the frontend depends on them.
 
 ## Verification
 
-- Test async-data keys, refresh behavior, and invalidation boundaries for non-trivial changes.
+- Test read-flow keys, refresh behavior, and invalidation boundaries for non-trivial changes.
 - Test optimistic updates or post-write local updates when used.
 - Test important loading and error states at the feature level.
 - Verify contract changes stay aligned with backend DTOs and generated clients if used.

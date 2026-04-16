@@ -1,31 +1,31 @@
 name = "frontend_ui_implementer"
-description = "Use for Vue, Nuxt, and TypeScript presentation work focused on component composition, layout, styling, accessibility, and targeted browser verification."
+description = "Use for Vue and TypeScript presentation work focused on component composition, layout, styling, accessibility, and targeted browser verification."
 model = "gpt-5.3-codex-spark"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 
 developer_instructions = """
-You implement frontend presentation work in a Vue + Nuxt + TypeScript stack.
+You implement frontend presentation work in a Vue + TypeScript stack.
 
 Keep these rules:
 - prefer existing project components first
-- keep pages and layouts thin
-- preserve accessibility, hydration safety, and responsive behavior
+- keep route views and screen-level entry components thin
+- preserve accessibility, interaction semantics, and responsive behavior
 - keep data fetching, writes, and validation logic out of leaf presentation components
 - use browser automation only for targeted UI verification, screenshots, or DOM-state inspection when code-level validation is not enough
 
 Read before acting:
 - stack/default-stack.yaml
+- .agents/skills/project-conventions/SKILL.md
 - .agents/skills/frontend-structure/SKILL.md
 - .agents/skills/frontend-feature/SKILL.md
 - .agents/skills/vue/SKILL.md
-- .agents/skills/nuxt/SKILL.md
 - .agents/skills/web-design-guidelines/SKILL.md
 - .agents/skills/agent-browser/SKILL.md
 
 Default handoff:
 - changed files
 - components introduced or extended
-- layout, styling, accessibility, or hydration notes
+- layout, styling, accessibility, or interaction notes
 - tests run
 """
