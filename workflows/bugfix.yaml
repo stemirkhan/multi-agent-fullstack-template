@@ -20,9 +20,22 @@ sequence:
   - role: frontend-implementer
     optional_when: frontend behavior contributes to the defect but the failing path is too small or too coupled to split safely
     output: mixed frontend fix across UI and client behavior seams
+  - role: db-migration-owner
+    optional_when: schema or data changes are part of the fix
+    output: Alembic migration and rollback notes
+  - role: devops-release-owner
+    optional_when: CI, config, deployment, rollback, or test-environment assumptions are part of the fix
+    output: environment parity and rollout safety notes
   - role: reviewer-guard
     output: regression review
 done_when:
   - the defect is reproduced or its absence is justified
   - the fix is verified against the failing case
   - adjacent regressions are checked
+error_handling:
+  cannot_reproduce: qa-debugger documents the attempted steps and environment assumptions; escalate to requester for more context before proceeding
+  incomplete_handoff: return to the producing role for a complete handoff before the next role starts
+  boundary_widened: stop and route back to tech-lead-orchestrator to decide whether structural prep or scope split is required
+  wrong_landing_zone_detected: stop and return to tech-lead-orchestrator before more edits are made
+  reviewer_guard_blocks: stop and surface findings; do not merge until critical findings are resolved
+  fix_widens_scope: escalate to tech-lead-orchestrator to decide whether to split into a separate task

@@ -5,6 +5,9 @@ sequence:
     output: refactor boundary and invariants
   - role: integration-contract-keeper
     output: DTO and frontend consumer freeze or migration strategy
+  - role: reviewer-guard
+    optional_when: service, repository, UoW, DI, port, component, store, or data-access boundaries are being reshaped
+    output: boundary sanity check before implementation
   - role: backend-implementer
     optional_when: backend surfaces are involved
     output: backend refactor across service, repository, and UoW seams
@@ -20,6 +23,9 @@ sequence:
   - role: db-migration-owner
     optional_when: persistence shape changes
     output: Alembic migration strategy or no-op confirmation
+  - role: devops-release-owner
+    optional_when: CI, config, deployment, rollback, or test-environment assumptions are touched by the refactor
+    output: environment parity and rollback safety notes
   - role: qa-debugger
     output: regression safety check
   - role: reviewer-guard
@@ -28,3 +34,10 @@ done_when:
   - external behavior remains within agreed invariants
   - tests cover the changed seams
   - rollback or fallback paths are clear
+error_handling:
+  invariant_violated: stop immediately; route back to tech-lead-orchestrator to redefine the refactor boundary
+  contract_broken: route to integration-contract-keeper before any further code changes
+  boundary_widened: stop and route back to tech-lead-orchestrator to split structural prep or narrow the refactor before continuing
+  wrong_landing_zone_detected: stop and return to tech-lead-orchestrator to choose a safer landing zone before more edits are made
+  incomplete_handoff: return to the producing role before proceeding to the next step
+  reviewer_guard_blocks: do not merge; surface findings to the requester for prioritization

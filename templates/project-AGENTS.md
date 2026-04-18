@@ -47,6 +47,21 @@ Frontend defaults:
 - Keep typed API access in dedicated data-access seams.
 - Keep forms schema-driven and backend error mapping explicit.
 
+Backend guardrails for backend portions of the project:
+- Application-layer modules must not import infrastructure implementations, ORM models, raw HTTP clients, or framework-specific adapters directly.
+- Extract or confirm application ports before feature logic depends on provider-specific behavior, external systems, or persistence variants.
+- Keep port families narrow by capability. Split reader, writer, provider, and policy concerns when responsibilities diverge.
+- When a write use case returns a rich DTO, keep final DTO assembly on a reader port or dedicated query seam instead of widening the mutation port.
+- Tests that cover persistence behavior must use isolated test databases or transaction scopes, not dev or shared app databases.
+
+## Operating Procedure
+
+- Before editing, choose the intended landing zone and decide whether structural prep is required first.
+- If a task changes both structure and behavior, decompose it into at least two phases: structural prep first, then feature work.
+- If a task touches port extraction, service boundaries, provider isolation, frontend data-access seams, or DI composition, produce a short decomposition plan before implementation continues.
+- If implementation discovers boundary widening, a wrong landing zone, or an unexpected new dependency family, stop and route the work back through orchestration before continuing.
+- Handoffs should record the chosen landing zone, whether structural prep was required or deferred, and any important boundary exceptions taken.
+
 ## Browser Automation
 
 - If `agent-browser` is installed, use it for browser-heavy reproduction, screenshots, scraping, downloads, and login-driven UI verification.

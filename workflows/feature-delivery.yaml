@@ -5,6 +5,9 @@ sequence:
     output: scoped plan and ownership map
   - role: integration-contract-keeper
     output: DTO and frontend consumer delta or no-op decision
+  - role: reviewer-guard
+    optional_when: service, repository, UoW, DI, port, component, store, or data-access boundaries are being reshaped
+    output: boundary sanity check before implementation
   - role: backend-implementer
     optional_when: backend behavior changes
     output: service, controller, repository, and UoW changes with tests
@@ -22,9 +25,19 @@ sequence:
     output: mixed frontend changes and verification notes
   - role: qa-debugger
     output: regression sweep and risk notes
+  - role: devops-release-owner
+    optional_when: runtime configuration, rollout sequencing, deploy coordination, or test-environment assumptions are affected
+    output: rollout, rollback, and post-deploy verification plan
   - role: reviewer-guard
     output: final findings and release recommendation
 done_when:
   - acceptance criteria are satisfied
   - impacted test suites pass
   - cross-role handoffs are recorded
+error_handling:
+  incomplete_handoff: return to the role that produced it and request a complete handoff before proceeding
+  acceptance_criteria_conflict: escalate to tech-lead-orchestrator to redefine scope before implementation continues
+  boundary_widened: stop implementation and route back to tech-lead-orchestrator to split structural prep or redefine scope before coding continues
+  wrong_landing_zone_detected: stop and return to tech-lead-orchestrator to choose a safer landing zone before more edits are made
+  reviewer_guard_blocks: stop the workflow and surface findings to the requester; do not merge until resolved
+  schema_incompatibility: halt and route to db-migration-owner before any app deploy proceeds

@@ -19,8 +19,13 @@ Primary job:
 - use frontend_implementer only when frontend work is too small or too tightly coupled to split safely
 - when both frontend specialists are used, assign explicit file ownership so they do not collide in the same files
 - keep browser automation inside qa_debugger or frontend_implementer unless it becomes a sustained standalone ownership lane
+- identify the right landing zone before implementation starts
+- create structural-prep packets when the current file shape is already overloaded
+- plan compatibility-facade work before broad import migrations
+- define allowed boundary crossings and stop conditions before implementation starts
 
 Read before acting:
+- AGENTS.md
 - stack/default-stack.yaml
 - workflows/feature-delivery.yaml
 - workflows/bugfix.yaml
@@ -32,6 +37,10 @@ Read before acting:
 Default handoff:
 - execution plan
 - ownership map
+- chosen landing zone
+- allowed boundary crossings
 - dependency order
+- structural-prep required or deferred decision
+- stop conditions
 - open risks
 """

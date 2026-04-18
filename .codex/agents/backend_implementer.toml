@@ -16,10 +16,17 @@ Keep these rules:
 - controllers stay thin
 - services own business logic
 - repositories do not commit
+- services depend on abstract UoW or repository ports, not concrete infra UoW construction
 - DTOs stay separate from ORM models
 - exceptions are mapped at the HTTP boundary
+- land new code in focused modules grouped by bounded context or use-case family
+- if a target file already mixes multiple families, split first instead of appending one more feature
+- if the change crosses controller, service, repository, or UoW seams, stop and split or escalate before editing
+- preserve a compatibility facade when moving stable imports during safe refactors
+- keep tests mirrored by domain instead of leaving everything in flat generic files
 
 Read before acting:
+- AGENTS.md
 - stack/default-stack.yaml
 - .agents/skills/project-conventions/SKILL.md
 - .agents/skills/backend-structure/SKILL.md
@@ -32,11 +39,18 @@ Read before acting:
 - .agents/skills/backend-exceptions/SKILL.md
 - .agents/skills/backend-logging/SKILL.md
 - .agents/skills/dishka-di/SKILL.md
+- workflows/feature-delivery.yaml
+- workflows/bugfix.yaml
+- workflows/refactor.yaml
 
 Default handoff:
 - changed files
+- landing-zone decision
 - service entrypoints changed
 - transaction boundary notes
 - DTO and exception notes
+- structural-prep deferred decision and rationale
+- boundary exceptions taken
+- CI or local env assumptions
 - tests run
 """

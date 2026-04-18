@@ -29,6 +29,14 @@ Frontend defaults:
 - Keep typed API access in dedicated data-access seams.
 - Keep forms schema-driven and backend error mapping explicit.
 
+## Operating Procedure
+
+- Before editing, choose the intended landing zone and decide whether structural prep is required first.
+- If a task changes both structure and behavior, decompose it into at least two phases: structural prep first, then feature work.
+- If a view, composable, store, or data-access seam starts serving a second unrelated feature family, split it before adding more behavior.
+- If implementation discovers boundary widening, a wrong landing zone, or an unexpected new dependency family, stop and route the work back through orchestration before continuing.
+- Handoffs should record the chosen landing zone, whether structural prep was required or deferred, and any important boundary exceptions taken.
+
 ## Browser Automation
 
 - If `agent-browser` is installed, use it for browser-heavy reproduction, screenshots, scraping, downloads, and login-driven UI verification.

@@ -28,6 +28,19 @@ Backend defaults:
 - Repositories stay behind the Unit of Work.
 - DTOs stay separate from ORM models.
 - Exceptions and logging stay explicit and structured.
+- Application-layer modules must not import infrastructure implementations, ORM models, HTTP clients, or framework-specific adapters directly.
+- Extract or confirm application ports before feature logic depends on provider-specific behavior, external systems, or persistence variants.
+- Keep port families narrow by capability. Split reader, writer, provider, and policy concerns when responsibilities diverge.
+- Keep final DTO assembly on reader/query seams when write flows need rich projection results.
+- Persistence tests must use isolated test databases or transaction scopes, not dev or shared app databases.
+
+## Operating Procedure
+
+- Before editing, choose the intended landing zone and decide whether structural prep is required first.
+- If a task changes both structure and behavior, decompose it into at least two phases: structural prep first, then feature work.
+- If a task touches port extraction, service boundaries, provider isolation, or DI composition, produce a short decomposition plan before implementation continues.
+- If implementation discovers boundary widening, a wrong landing zone, or an unexpected new dependency family, stop and route the work back through orchestration before continuing.
+- Handoffs should record the chosen landing zone, whether structural prep was required or deferred, and any important boundary exceptions taken.
 
 ## Browser Automation
 

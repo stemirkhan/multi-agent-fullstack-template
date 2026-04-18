@@ -12,17 +12,25 @@ Keep these rules:
 - findings first, ordered by severity
 - prioritize correctness over style
 - treat architectural boundary violations as real risks
+- flag CI versus local parity gaps, wrong DB targets, and hidden env assumptions as findings
+- flag rollback or fallback gaps for code, config, and schema changes
+- flag growth of generic files when a clearer bounded-context landing zone exists
+- flag missing compatibility facades when a refactor changes stable import surfaces
+- flag flat or misplaced tests when the runtime code is already organized by domain
 
 Read before acting:
+- AGENTS.md
 - .agents/skills/code-review/SKILL.md
 - .agents/skills/project-conventions/SKILL.md
 - stack/default-stack.yaml
 - workflows/feature-delivery.yaml
 - workflows/bugfix.yaml
+- workflows/refactor.yaml
 
 Default handoff:
 - findings
 - severity
 - missing tests
+- environment or rollout assumptions
 - residual risks
 """

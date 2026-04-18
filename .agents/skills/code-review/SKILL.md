@@ -33,43 +33,55 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 
 - Controllers stay thin and do not hold business logic.
 - Services own use-case orchestration and business decisions.
+- Services do not import or construct concrete infrastructure UoW or session types.
+- Application modules do not import infrastructure implementations, DI wiring, raw HTTP clients, or ORM models directly.
 - Repositories do not leak sessions upward or call `commit()` themselves.
 - Write flows use an explicit Unit of Work and rollback path.
+- UoW factory and DI wiring preserve the intended `async with` lifecycle and rollback semantics.
+- Shared UoW or repository surfaces have not grown when a family-port extraction should have happened first.
 - DTOs remain separate from ORM models and transport glue.
 - Exceptions are explicit and mapped cleanly at the FastAPI boundary.
 - Dishka wiring uses sensible scopes and does not create hidden lifecycle bugs.
 - Logging is structured, useful, and does not leak secrets.
 - Alembic or schema changes preserve compatibility and rollback reality.
-
-## Frontend Review Rubric
-
-- Existing components, layouts, and slots are reused before inventing new primitives.
-- Route views stay thin; data loading, writes, and transport details live in composables, feature data-access seams, or well-bounded stores.
-- Composable request, refresh, and store update flows handle loading, error, success, and refresh paths correctly.
-- Forms use schema-driven validation consistently and map backend errors sanely.
-- Accessibility-sensitive behavior remains intact for dialogs, menus, tabs, tables, and forms.
-- Responsive behavior and view or composable boundaries are preserved where the feature depends on them.
+- Test and CI paths use an isolated test profile and do not silently point at an app database.
+- If the repo includes agent scaffolding, check parity across `agents/roles`, `.codex/agents`, `workflows/`, and integrity scripts.
 
 ## Common Regression Patterns
 
 - A controller now talks to a repository directly.
 - A service now depends on FastAPI or HTTP concerns.
+- A service now constructs `SqlAlchemyUnitOfWork`, `AsyncSession`, or another concrete infra boundary directly.
+- A broad `uow.foo` or repository surface grew even though the change only touched one capability family.
 - A repository creates its own session or commits independently.
 - A write flow mutates state without an explicit transaction boundary.
+- A UoW factory returns an object that skips the expected `__aenter__` or `__aexit__` behavior.
+- A write-oriented port absorbed read-model assembly or DTO projection logic that should have stayed on a reader seam.
 - Response DTOs silently changed and consumers were not updated.
 - New exceptions are raised but never mapped to stable HTTP responses.
 - Logs were added with raw payloads, secrets, or duplicate noise.
 - A migration is destructive without staged compatibility.
-- A fetch, refresh, or store update path changed without updating empty, pending, or error states.
-- New UI abstractions duplicate existing component-system patterns.
+- Tests or CI run against a shared app database or the wrong settings profile.
+- A new feature was appended to a generic file like `auth.py`, `models.py`, or `settings.py` even though it introduced a new use-case family or bounded context.
+- A refactor moved symbols across modules without keeping a compatibility facade for stable imports.
+- Tests remained in a generic bucket even after the runtime code was clearly organized by domain.
+
+## Architectural Growth Review
+
+- Flag files that keep accumulating unrelated responsibilities even if the code inside them is locally correct.
+- Treat “wrong landing zone” as a maintainability risk when the repo already has clearer domain boundaries available.
+- Call out missing structural-prep work when a feature should have started with a split before implementation.
+- Treat deferred port extraction or hidden boundary surgery inside a behavior patch as a review finding, not as harmless cleanup debt.
 
 ## Testing Review
 
 - Check whether the tests cover the changed seam, not just nearby files.
 - For backend writes, look for commit and rollback coverage.
+- For DI or boundary refactors, look for provider or factory coverage through the abstract interface used by services.
 - For API changes, look for response shape and error mapping coverage.
 - For persistence changes, look for migration and repository verification.
-- For frontend changes, look for behavior, accessibility, and async-state coverage where risk is non-trivial.
+- If CI or local test entrypoints changed, check that the effective DB target is still a dedicated test database.
+- For persistence-affecting refactors, verify the test DB safeguard or fail-fast guard still prevents accidental use of dev or shared app databases.
 - If tests were not run, treat that as residual risk and say so explicitly.
 
 ## Review Output
