@@ -53,6 +53,7 @@ Before reporting findings, read and apply:
 
 ## Output Rules
 
+- Return one JSON object matching `references/schemas/review-findings.schema.json`; do not wrap it in a Markdown fence.
 - Group findings by severity first: Critical, High, Medium, Low.
 - For each finding include:
   - affected file or area

@@ -1,0 +1,31 @@
+id: feature-delivery
+goal: Deliver a backend feature with explicit ownership and final review.
+sequence:
+  - role: tech_lead_orchestrator
+    output: scoped plan and ownership map
+  - role: reviewer_guard
+    optional_when: service, repository, UoW, DI, or port boundaries are reshaped
+    output: boundary sanity check
+  - role: backend_implementer
+    output: backend behavior and tests
+  - role: db_migration_owner
+    optional_when: schema changes are required
+    output: migration and rollback notes
+  - role: qa_debugger
+    output: regression sweep and risk notes
+  - role: devops_release_owner
+    optional_when: runtime config, rollout, or test-environment assumptions are affected
+    output: rollout and rollback plan
+  - role: reviewer_guard
+    output: final findings and release recommendation
+done_when:
+  - acceptance criteria are satisfied
+  - impacted test suites pass
+  - cross-role handoffs are recorded
+error_handling:
+  incomplete_handoff: return to the role that produced it before implementation continues
+  acceptance_criteria_conflict: route to tech_lead_orchestrator to redefine scope before implementation continues
+  boundary_widened: stop and route back to tech_lead_orchestrator to split structural prep or narrow scope
+  wrong_landing_zone_detected: stop and return to tech_lead_orchestrator before more edits are made
+  reviewer_guard_blocks: stop and surface Critical or High findings; selected Medium findings require requester disposition before merge
+  schema_incompatibility: halt and route to db_migration_owner before any application deploy proceeds

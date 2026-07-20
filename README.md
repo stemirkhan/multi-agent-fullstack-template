@@ -9,18 +9,29 @@
 > Copy-ready Codex subagents, skills, workflows, and project `AGENTS.md` templates for a FastAPI + Vue fullstack stack.
 
 This repository packages a reusable multi-agent setup for projects that want:
-- official Codex subagents in `.codex/agents/`
-- official Codex skills in `.agents/skills/`
+- project-scoped Codex agents in `.codex/agents/`
+- project-scoped Codex skills in `.agents/skills/`
 - a clear architectural contract in `stack/default-stack.yaml`
 - repeatable multi-agent sequencing through `workflows/`
 - project-level `AGENTS.md` templates for fullstack, backend-only, and frontend-only installs
 
 ## TL;DR
 
-Use one of these:
-- Fullstack project: copy `.codex/`, `.agents/`, `stack/`, `workflows/`, and `templates/project-AGENTS.md`
-- Backend-only project: use the `backend-only` install commands in [QUICKSTART.md](QUICKSTART.md)
-- Frontend-only project: use the `frontend-only` install commands in [QUICKSTART.md](QUICKSTART.md)
+Use the safe installer from this repository:
+
+```bash
+python3 scripts/install.py --profile full --target /absolute/path/to/your-project --dry-run
+python3 scripts/install.py --profile full --target /absolute/path/to/your-project
+```
+
+Replace `full` with `backend` or `frontend` for a partial install. The installer
+preflights conflicts, refuses silent overwrite, and rolls back handled write
+failures. Applying a profile currently requires Linux or macOS; see the
+[Quickstart](QUICKSTART.md) for the filesystem and crash-consistency limits.
+
+- Fullstack project: install the `full` profile
+- Backend-only project: install the `backend` profile
+- Frontend-only project: install the `frontend` profile
 - Browser automation: install `agent-browser` separately if you want browser-driven verification
 
 ## What You Get
@@ -32,25 +43,25 @@ Use one of these:
 | `templates/` | Copy-ready `AGENTS.md` files for target projects |
 | `workflows/` | Default multi-agent execution flows for features, bugfixes, and refactors |
 | `stack/default-stack.yaml` | Explicit backend and frontend architecture contract |
-| `prompts/common/` | Shared prompt constraints used by the subagents |
+| `distribution/profiles.toml` | Canonical contents of fullstack and partial install profiles |
+| `scripts/` and `tests/` | Safe installer, integrity validation, and regression tests |
 
 ## Install Modes
 
 | Mode | Best for | What to install |
 | --- | --- | --- |
 | Full project install | Fullstack repos that want the whole setup | `.codex/`, `.agents/`, `stack/`, `workflows/`, and `AGENTS.md` |
-| Backend-only install | API or service repos | Backend-focused agents, backend skills, `stack/`, and backend `AGENTS.md` |
-| Frontend-only install | UI repos | Frontend-focused agents, frontend skills, `stack/`, and frontend `AGENTS.md` |
-| Global skills install | Reusing the skills outside one project | Copy `.agents/skills/*` into `$HOME/.agents/skills/` |
+| Backend-only install | API or service repos | Backend-focused agents, skills, profile workflows, `stack/`, and backend `AGENTS.md` |
+| Frontend-only install | UI repos | Frontend-focused agents, skills, profile workflows, `stack/`, and frontend `AGENTS.md` |
 
 Primary full install:
 
-```sh
-cp -R .codex .agents stack workflows /absolute/path/to/your-project/
-cp templates/project-AGENTS.md /absolute/path/to/your-project/AGENTS.md
+```bash
+python3 scripts/install.py --profile full --target /absolute/path/to/your-project --dry-run
+python3 scripts/install.py --profile full --target /absolute/path/to/your-project
 ```
 
-For `backend-only`, `frontend-only`, and global install commands, see [QUICKSTART.md](QUICKSTART.md).
+For partial-install guidance, see [QUICKSTART.md](QUICKSTART.md).
 
 ## How It Fits Together
 
@@ -73,9 +84,12 @@ AGENTS.md                    # repository maintenance instructions for this temp
   config.toml
   agents/                    # canonical Codex subagents
 .agents/
-  skills/                    # official Codex skills
-prompts/
-  common/                    # shared prompt constraints
+  skills/                    # project-scoped Codex skills
+distribution/
+  profiles.toml              # install profile source of truth
+scripts/
+  install.py                 # conflict-safe installer
+  check-integrity.sh         # canonical validation entrypoint
 stack/
   default-stack.yaml         # architecture contract
 templates/
@@ -83,6 +97,7 @@ templates/
   project-AGENTS.backend.md
   project-AGENTS.frontend.md
 workflows/                   # sequencing and handoff contracts
+tests/                       # installer and integrity regression tests
 ```
 
 ## Agent Catalog
@@ -94,7 +109,7 @@ workflows/                   # sequencing and handoff contracts
 | `frontend_ui_implementer` | Vue presentation, route-view composition, styling, accessibility | the work is primarily visual or interaction-heavy |
 | `frontend_data_validation_implementer` | typed API access, async-data, Pinia, forms, validation | the work is primarily client logic or data flow |
 | `frontend_implementer` | tightly coupled mixed frontend work | the task is too small or coupled to split safely |
-| `integration_contract_keeper` | DTO, OpenAPI, and frontend-consumer alignment | request or response contracts change |
+| `integration_contract_keeper` | routes, statuses, headers, auth, DTO/OpenAPI, errors, and consumer alignment | any public API declaration changes |
 | `db_migration_owner` | schema change planning, Alembic, rollback | persistence shape changes |
 | `devops_release_owner` | CI, deployment, rollout, rollback, observability | release or infra concerns are involved |
 | `qa_debugger` | reproduction, failing paths, regression checks, browser verification | you need to debug or verify behavior |
@@ -109,8 +124,9 @@ workflows/                   # sequencing and handoff contracts
 | Vue UI, route-view composition, styling, accessibility | `frontend_ui_implementer` |
 | frontend data flow, forms, Pinia, validation | `frontend_data_validation_implementer` |
 | mixed but small frontend changes | `frontend_implementer` |
-| API contract drift or DTO sync | `integration_contract_keeper` |
+| API route, status, header, auth, DTO, error, or consumer drift | `integration_contract_keeper` |
 | schema changes or Alembic | `db_migration_owner` |
+| CI, deployment, rollout, or observability | `devops_release_owner` |
 | reproduction, failing paths, browser checks | `qa_debugger` |
 | final review and regression risk | `reviewer_guard` |
 
@@ -160,7 +176,7 @@ Task: <describe the UI change here>
 ```text
 Spawn subagents for this frontend client-logic task.
 Use frontend_data_validation_implementer for typed API access, composable-driven data flows, Pinia state, and schema-driven validation changes.
-Use integration_contract_keeper if request or response contracts might change.
+Use integration_contract_keeper if any public API declaration might change.
 Use reviewer_guard for the final review.
 Wait for all results and summarize changed files, client-logic notes, tests, and residual risks.
 Task: <describe the client behavior change here>
@@ -178,6 +194,7 @@ Use backend_implementer for backend fixes.
 Use frontend_ui_implementer for presentation-heavy frontend fixes.
 Use frontend_data_validation_implementer for client data, async-data, store, form, or validation fixes.
 Use frontend_implementer only when the frontend fix is too small or too coupled to split.
+Use qa_debugger again after implementation to reproduce the original failure and check adjacent regressions.
 Use reviewer_guard for a final regression review.
 Wait for all results and summarize root cause, fix, tests, and residual risks.
 Bug: <describe the bug here>
@@ -191,7 +208,7 @@ Bug: <describe the bug here>
 ```text
 Spawn subagents for this browser-heavy task.
 Use tech_lead_orchestrator to decide whether the work belongs to QA, frontend, or both.
-Use qa_debugger for agent-browser-based reproduction, screenshots, login handling, downloads, scraping, and verification.
+If the agent-browser CLI is available, use qa_debugger for browser-based reproduction, screenshots, login handling, downloads, scraping, and verification.
 Use frontend_ui_implementer for presentation-heavy app changes discovered during browser verification.
 Use frontend_data_validation_implementer for client data, async-data, store, form, or validation fixes discovered during browser verification.
 Use frontend_implementer only if the frontend change is too small or too coupled to split.
@@ -221,7 +238,7 @@ Task: <describe the schema or data change here>
 ```text
 Spawn subagents for this fullstack feature.
 Use tech_lead_orchestrator to break the task into backend, frontend UI, frontend data and validation, and contract work.
-Use integration_contract_keeper for API and DTO contract alignment.
+Use integration_contract_keeper for route, status, header, auth, DTO, error, and consumer alignment.
 Use backend_implementer for backend changes.
 Use frontend_ui_implementer for presentation-heavy frontend changes.
 Use frontend_data_validation_implementer for async-data, store, form, and validation-heavy frontend changes.
@@ -252,16 +269,19 @@ Wait for both subagents and summarize findings by severity, then list missing te
 | Concern | Default |
 | --- | --- |
 | Framework | `FastAPI` |
+| Validation/settings | `Pydantic v2` with explicit settings boundaries |
 | ORM | `SQLAlchemy 2.x` |
 | DI | `Dishka` |
 | Migrations | `Alembic` |
 | Architecture | controller -> service -> unit of work -> repositories |
 | Boundaries | dedicated DTO layer, explicit exceptions, structured logging |
+| Contracts | OpenAPI-aligned backend DTOs and typed frontend consumers |
 
 Backend rules:
+- keep I/O paths async and isolate blocking adapters
 - controllers translate HTTP only and call services
 - services own use-case orchestration and transaction boundaries
-- repositories stay behind the unit of work
+- write repositories stay behind the unit of work; read-only use cases may use dedicated reader ports
 - DTOs stay separate from ORM and transport types
 - exceptions and logging stay explicit and structured
 
@@ -271,14 +291,15 @@ Backend rules:
 | --- | --- |
 | Framework | `Vue 3 + TypeScript` |
 | Shared state | `Pinia` |
-| Data flow | typed API clients and composable-driven read and write flows |
+| Data flow | typed API clients, explicit server-state boundaries, and composable-driven flows |
 | Forms | composable-first with schema-driven validation |
 
 Frontend rules:
 - keep route views and screen-level entry components thin
 - move reusable behavior into composables and shared components
 - keep typed API access in dedicated data-access seams
-- use `Pinia` only when state truly crosses features or views
+- keep server state and invalidation in data-access/query seams
+- use `Pinia` only for shared client-owned state that truly crosses features or views
 - keep forms schema-driven and backend error mapping explicit
 
 The canonical stack contract lives in [`stack/default-stack.yaml`](stack/default-stack.yaml).
@@ -298,6 +319,7 @@ Backend-oriented skills:
 - `backend-logging`
 - `db-migration`
 - `api-contracts`
+- `devops-release`
 
 Frontend-oriented skills:
 - `frontend-structure`
@@ -313,7 +335,6 @@ Cross-cutting skills:
 - `repo-intake`
 - `task-decomposition`
 - `code-review`
-- `codex-review-loop`
 - `test-debug`
 - `agent-browser`
 
@@ -336,20 +357,37 @@ Copy-ready project instruction files:
 - `.codex/agents/` and `.agents/skills/` are the canonical Codex layer in this template
 - skills should stay small and composable
 - workflows describe sequencing and handoffs, not tool implementation details
-- stack-specific constraints belong in prompts and stack manifests, not duplicated everywhere
+- stack-specific constraints originate in the stack manifest and stay synchronized with templates and skills
+- agents load task-relevant skills progressively instead of reading the entire catalog up front
+- reusable agents inherit the parent model unless a target project deliberately opts into a model-specific profile
 - frontend specialist agents should not edit the same files in parallel without explicit ownership
 
 ## Reuse Modes
 
-- `Project-scoped Codex`: copy `.codex/`, `.agents/`, `stack/`, `workflows/`, and a project `AGENTS.md` template into a target repository
-- `Partial install`: use the `backend-only` or `frontend-only` commands in [`QUICKSTART.md`](QUICKSTART.md) when the target project does not need the full role set
-- `User-scoped Codex`: optionally copy `.agents/skills/*` into `$HOME/.agents/skills/`
+- `Project-scoped Codex`: use `scripts/install.py --profile full`
+- `Partial install`: use the `backend` or `frontend` installer profile when the target project does not need the full role set
+- `User-scoped Codex`: install only individually reviewed, self-contained skills; bulk-copying this project-scoped catalog is unsupported
+
+## Validate This Template
+
+```bash
+python3 -m pip install --requirement requirements-validation.txt
+bash scripts/check-integrity.sh
+python3 -m unittest discover -s tests -v
+```
+
+The installer itself uses only the Python standard library. The integrity check
+uses the pinned PyYAML validation dependency to parse the stack and workflows,
+and validates canonical agents, skills, documentation catalogs, review output
+schema, and all install profiles. CI runs the same commands so a partial-install
+dependency cannot silently drift. Source tooling is tested on Python 3.12
+through 3.14.
 
 ## Current Contents
 
 This repository currently contains:
-- official Codex subagents in `.codex/agents/*.toml`
-- official Codex skill directories in `.agents/skills/*`
+- project-scoped Codex agents in `.codex/agents/*.toml`
+- project-scoped Codex skill directories in `.agents/skills/*`
 - copy-ready project `AGENTS.md` templates
-- shared workflows and prompt layers
+- shared workflows and profile-aware installation metadata
 - a stack-aware architecture contract

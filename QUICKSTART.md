@@ -1,41 +1,63 @@
 # Quickstart
 
-This repository is meant to be copied or vendored into another project so teams can reuse:
-- stack-aware skills
-- official Codex subagents
-- official Codex skill directories
-- stack and workflow support files
+This repository installs project-scoped Codex agents, skills, stack guidance,
+and profile-specific workflows into an existing project. Installation is driven by the
+declarative profiles in `distribution/profiles.toml`.
 
-This repository now follows the official Codex layout:
+## Requirements
 
-```text
-.codex/agents/*.toml
-.agents/skills/*/SKILL.md
+- Python 3.12, 3.13, or 3.14. The installer is standard-library-only; source
+  integrity checks additionally use `requirements-validation.txt`.
+- Linux or macOS for applying an install: overwrite protection and rollback use
+  POSIX `dir_fd`, no-follow, and hard-link semantics.
+- A local checkout of this repository.
+- A target project directory that you are prepared to modify.
+
+## Choose A Profile
+
+| Profile | Includes |
+| --- | --- |
+| `full` | Backend, frontend, contract, migration, release, QA, review, stack, and workflows |
+| `backend` | Backend-oriented agents, skills, and backend-only workflows |
+| `frontend` | Frontend-oriented agents, skills, API-contract guidance, and frontend-only workflows |
+
+Partial profiles are transitively validated: copied agents cannot require a
+skill or workflow that the profile omits.
+
+## Preview The Install
+
+Always start with a dry run:
+
+```bash
+python3 scripts/install.py \
+  --profile full \
+  --target /absolute/path/to/your-project \
+  --dry-run
 ```
 
-## Recommended: Install Into A Project
+Replace `full` with `backend` or `frontend` as needed. The preview lists every
+destination and reports conflicts without changing the target.
 
-From this repository, copy the official Codex layer directly:
+## Apply The Install
 
-```sh
-cp -R .codex .agents stack workflows /absolute/path/to/your-project/
+```bash
+python3 scripts/install.py \
+  --profile full \
+  --target /absolute/path/to/your-project
 ```
 
-This copies:
-- `.codex/`
-- `.agents/`
-- `stack/`
-- `workflows/`
+The installer refuses to overwrite an existing file. Review conflicts and
+merge project-owned instructions deliberately. Use `--force` only when you
+intend to replace every reported destination:
 
-into the target project.
-
-Then add the project-level `AGENTS.md` template:
-
-```sh
-cp templates/project-AGENTS.md /absolute/path/to/your-project/AGENTS.md
+```bash
+python3 scripts/install.py \
+  --profile full \
+  --target /absolute/path/to/your-project \
+  --force
 ```
 
-The result looks like:
+After a full install, the target contains:
 
 ```text
 your-project/
@@ -43,91 +65,73 @@ your-project/
   .codex/
     config.toml
     agents/
-      backend_implementer.toml
-      db_migration_owner.toml
-      devops_release_owner.toml
-      frontend_data_validation_implementer.toml
-      frontend_implementer.toml
-      frontend_ui_implementer.toml
-      integration_contract_keeper.toml
-      qa_debugger.toml
-      reviewer_guard.toml
-      tech_lead_orchestrator.toml
+      ...
   .agents/
     skills/
       ...
   stack/
+    default-stack.yaml
   workflows/
+    ...
 ```
 
-Then open that project in Codex. Codex can discover:
-- project subagents in `.codex/agents/`
-- project skills in `.agents/skills/`
+Backend and frontend profiles install profile-specific workflows containing
+only available roles. Their agents still discover installed roles before
+delegating and load task-specific skills conditionally.
 
-The bundled frontend skill pack in this template is curated for `Vue 3` and `Pinia`. The frontend skills are taken from `antfu/skills` and then adapted locally to this repository's role and workflow model. The optional `codex-review-loop` skill remains available for deeper review workflows.
+## Customize The Target Project
 
-## Backend-Only Install
+Open the installed `AGENTS.md` and record the target project's real:
 
-If the target project is backend-only, install just the backend-oriented layer:
+- bootstrap and development commands;
+- lint, formatting, type-check, and test commands;
+- backend/frontend entrypoints and generated artifacts;
+- migration command and isolated test-database safeguard;
+- build, release, and rollback commands where applicable.
 
-```sh
-TARGET=/absolute/path/to/your-project
-mkdir -p "$TARGET/.codex/agents" "$TARGET/.agents/skills"
-cp .codex/config.toml "$TARGET/.codex/config.toml"
-cp .codex/agents/{backend_implementer.toml,db_migration_owner.toml,devops_release_owner.toml,qa_debugger.toml,reviewer_guard.toml,tech_lead_orchestrator.toml} "$TARGET/.codex/agents/"
-cp -R .agents/skills/{agent-browser,api-contracts,backend-dtos,backend-exceptions,backend-feature,backend-logging,backend-structure,code-review,codex-review-loop,db-migration,devops-release,dishka-di,fastapi-controllers,project-conventions,repo-intake,service-layer,sqlalchemy-repositories,task-decomposition,test-debug,unit-of-work} "$TARGET/.agents/skills/"
-cp -R stack "$TARGET/"
-cp templates/project-AGENTS.backend.md "$TARGET/AGENTS.md"
+Do not leave invented placeholder commands in project guidance.
+
+## Optional Browser Automation
+
+The `agent-browser` skill is included where the profile declares it, but its CLI
+is a separate dependency. Install it only when browser-driven verification is
+needed:
+
+```bash
+npm install -g agent-browser
+agent-browser install
 ```
 
-This partial install intentionally skips `workflows/`, because the bundled workflow files assume the full multi-agent role set.
+Agents should use browser automation only when `command -v agent-browser`
+succeeds; otherwise they must fall back to code-level or manual verification.
 
-## Frontend-Only Install
+## User-Scoped Skills
 
-If the target project is frontend-only, install just the frontend-oriented layer:
+Do not bulk-copy this catalog into `$HOME/.agents/skills`: several skills rely
+on project-scoped stack, convention, or review assets. Use the supported project
+profiles, or install an individually reviewed self-contained skill separately.
 
-```sh
-TARGET=/absolute/path/to/your-project
-mkdir -p "$TARGET/.codex/agents" "$TARGET/.agents/skills"
-cp .codex/config.toml "$TARGET/.codex/config.toml"
-cp .codex/agents/{frontend_data_validation_implementer.toml,frontend_implementer.toml,frontend_ui_implementer.toml,qa_debugger.toml,reviewer_guard.toml,tech_lead_orchestrator.toml} "$TARGET/.codex/agents/"
-cp -R .agents/skills/{agent-browser,code-review,codex-review-loop,frontend-data-access,frontend-feature,frontend-forms-and-validation,frontend-structure,pinia,project-conventions,repo-intake,task-decomposition,test-debug,vue,web-design-guidelines} "$TARGET/.agents/skills/"
-cp -R stack "$TARGET/"
-cp templates/project-AGENTS.frontend.md "$TARGET/AGENTS.md"
+## Validate The Source Template
+
+Before publishing changes to this repository, run:
+
+```bash
+python3 -m pip install --requirement requirements-validation.txt
+bash scripts/check-integrity.sh
+python3 -m unittest discover -s tests -v
 ```
 
-This partial install also skips `workflows/`, because the bundled workflow files assume the full multi-agent role set.
-
-If you want adversarial PR or branch reviews through Codex CLI, keep `.agents/skills/codex-review-loop`.
-
-## Optional: Install `agent-browser` CLI
-
-If you plan to run browser automation flows locally, install the CLI separately:
-
-```sh
-npm install -g agent-browser && agent-browser install
-```
-
-## Optional: Install Skills Globally
-
-If you want the skills available outside one project, copy them into your home-level Codex skill directory:
-
-```sh
-mkdir -p "$HOME/.agents/skills"
-cp -R .agents/skills/* "$HOME/.agents/skills/"
-```
-
-This makes the skills available in:
-
-```text
-$HOME/.agents/skills/
-```
+The checks parse TOML, YAML, and the review JSON schema; validate stack and
+workflow shapes, documentation catalogs, local references, and profile closure;
+and exercise transactional installer behavior plus smoke installs for every
+profile.
 
 ## Notes
 
-- If the target project already has `.codex/` or `.agents/`, merge carefully instead of blindly overwriting files.
-- If the target project already has `AGENTS.md`, merge carefully instead of overwriting it blindly.
-- Official docs:
-  - https://developers.openai.com/codex/subagents
-  - https://developers.openai.com/codex/skills
-- The target stack assumptions are documented in `stack/default-stack.yaml`.
+- Applied installs roll back handled copy and filesystem errors. They are not
+  crash-consistent across `SIGKILL`, host failure, or power loss.
+- Project `.codex/config.toml` is loaded only for a trusted project.
+- Reusable agent files intentionally inherit the parent model rather than
+  pinning an entitlement-specific model id.
+- The architecture contract lives in `stack/default-stack.yaml`.
+- Official references: [Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents), [Build skills](https://learn.chatgpt.com/docs/build-skills), and [Custom instructions with AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md).

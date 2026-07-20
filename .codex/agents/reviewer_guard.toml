@@ -1,6 +1,6 @@
 name = "reviewer_guard"
 description = "Use for code review, regression analysis, architecture drift detection, migration risk review, and identifying missing tests before merge or release."
-model = "gpt-5.4"
+nickname_candidates = ["Reviewer", "Guard"]
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 
@@ -20,17 +20,22 @@ Keep these rules:
 
 Read before acting:
 - AGENTS.md
-- .agents/skills/code-review/SKILL.md
-- .agents/skills/project-conventions/SKILL.md
 - stack/default-stack.yaml
-- workflows/feature-delivery.yaml
-- workflows/bugfix.yaml
-- workflows/refactor.yaml
+- .agents/skills/project-conventions/SKILL.md
+
+Load conditionally when installed and relevant:
+- code-review for the default read-only review procedure
+- test-debug when a reported bug or flaky failure must be reproduced
+- the matching delivery, bugfix, or refactor workflow when that workflow is present
 
 Default handoff:
+- summary
+- files changed/inspected
+- tests/verification run, or not run with a reason
+- risks/residual risks
+- open questions/follow-up owner
 - findings
 - severity
 - missing tests
 - environment or rollout assumptions
-- residual risks
 """

@@ -12,6 +12,7 @@ project should behave.
 - Keep official Codex skills in `.agents/skills/`.
 - Keep workflows in `workflows/` as sequencing and handoff contracts, not role definitions.
 - Treat `stack/default-stack.yaml` as the default architecture contract and stack SSOT.
+- Treat `distribution/profiles.toml` as the install-surface SSOT for fullstack and partial profiles.
 - Treat `templates/project-AGENTS*.md` as the copy-ready target-project instruction layer.
 
 ## Authoring Rules
@@ -21,6 +22,8 @@ project should behave.
 - Prefer reusable skills over adding new roles. Add a new subagent only when ownership boundaries are materially different.
 - Keep repository `AGENTS.md` maintenance-focused. Put target-project operating guidance in `templates/project-AGENTS*.md`, not here.
 - Avoid hard-coded local filesystem paths in skills or templates; all shipped assets should stay copy-safe.
+- Keep install profiles transitively complete: every copied agent dependency must also be copied or made explicitly conditional.
+- Keep reusable agent files model-agnostic by default; target projects may opt into model-specific profiles separately.
 
 ## Stack Assumptions
 
@@ -47,13 +50,14 @@ project should behave.
 When stack assumptions change:
 - Update `stack/default-stack.yaml` first.
 - Then sync `.agents/skills/project-conventions/conventions.md`.
-- Then update affected skills, subagent `Read before acting` lists, prompts, templates, README, and QUICKSTART.
+- Then update affected skills, subagent `Read before acting` lists, templates, README, and QUICKSTART.
 - Then run `bash scripts/check-integrity.sh`.
 
 When a skill is added, removed, renamed, or re-scoped:
 - Sync relevant `.codex/agents/*.toml` files.
 - Sync README skill catalogs and install guidance.
 - Sync QUICKSTART copy commands.
+- Sync `distribution/profiles.toml` when profile membership changes.
 - Sync templates if agent routing, handoffs, or recommended usage changed.
 - Run `bash scripts/check-integrity.sh`.
 
@@ -61,7 +65,14 @@ When workflows change:
 - Keep YAML high-level and outcome-oriented.
 - Put detailed operational procedures in skills, not in workflow files.
 - Do not encode role definitions inside workflow steps.
+- Sync profile-specific workflows under `distribution/workflows/` when shared sequencing or stop conditions change.
 - Sync any impacted project templates or agent handoff expectations in the same patch.
+- Run `bash scripts/check-integrity.sh`.
+
+When install behavior changes:
+- Update `distribution/profiles.toml` first.
+- Update `scripts/install.py`, README, and QUICKSTART in the same patch.
+- Run installer smoke tests for fullstack, backend, and frontend profiles.
 - Run `bash scripts/check-integrity.sh`.
 
 ## Repository-Specific Guidance
@@ -69,3 +80,4 @@ When workflows change:
 - Keep `project-conventions` aligned with the actual stack contract; it should refine `stack/default-stack.yaml`, not contradict it.
 - Keep `code-review` as the default read-only review skill. Optional automation such as `codex-review-loop` should extend the template, not silently replace the default review path.
 - If install surface changes, verify that partial-install commands remain copy-paste safe for backend-only and frontend-only setups.
+- Keep workflow role ids identical to canonical `.codex/agents` names; do not introduce a second normalization convention.

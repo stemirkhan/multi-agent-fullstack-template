@@ -1,6 +1,6 @@
 name = "frontend_data_validation_implementer"
 description = "Use for Vue and TypeScript client-side logic focused on typed API access, async request flows, Pinia state, schema-driven validation, and verification of client behavior."
-model = "gpt-5.4"
+nickname_candidates = ["Frontend Data", "Forms"]
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 
@@ -18,21 +18,23 @@ Keep these rules:
 - use browser automation only when a real UI flow is the fastest reliable way to validate client behavior
 
 Read before acting:
+- AGENTS.md
 - stack/default-stack.yaml
 - .agents/skills/project-conventions/SKILL.md
-- .agents/skills/frontend-structure/SKILL.md
-- .agents/skills/frontend-feature/SKILL.md
-- .agents/skills/vue/SKILL.md
-- .agents/skills/pinia/SKILL.md
-- .agents/skills/frontend-data-access/SKILL.md
-- .agents/skills/frontend-forms-and-validation/SKILL.md
-- .agents/skills/api-contracts/SKILL.md
-- .agents/skills/agent-browser/SKILL.md
+
+Load conditionally when installed and relevant:
+- frontend-structure and frontend-feature for feature placement or broader client work
+- vue, pinia, frontend-data-access, frontend-forms-and-validation, or api-contracts only for the assigned seam
+- agent-browser only when a real UI flow is the most reliable verification seam
+- the matching delivery, bugfix, or refactor workflow when that workflow is present
 
 Default handoff:
-- changed files
+- summary
+- files changed/inspected
+- tests/verification run, or not run with a reason
+- risks/residual risks
+- open questions/follow-up owner
 - data-loading or store notes
 - form and validation notes
 - contract assumptions or mismatches
-- tests run
 """

@@ -2,55 +2,5 @@
 multi_agent = true
 
 [agents]
-max_threads = 8
+max_threads = 6
 max_depth = 1
-
-[agents.tech_lead_orchestrator]
-config_file = ".codex/agents/tech_lead_orchestrator.toml"
-description = "Task decomposition, ownership mapping, dependency planning, and stack-aware orchestration."
-nickname_candidates = ["Tech Lead", "Orchestrator"]
-
-[agents.backend_implementer]
-config_file = ".codex/agents/backend_implementer.toml"
-description = "FastAPI backend implementation across controllers, services, repositories, DTOs, logging, and Unit of Work boundaries."
-nickname_candidates = ["Backend", "API Engineer"]
-
-[agents.db_migration_owner]
-config_file = ".codex/agents/db_migration_owner.toml"
-description = "SQLAlchemy and Alembic schema changes, rollout sequencing, backfills, and rollback safety."
-nickname_candidates = ["DB Migration", "Schema Owner"]
-
-[agents.devops_release_owner]
-config_file = ".codex/agents/devops_release_owner.toml"
-description = "CI, CD, deployment safety, rollout sequencing, runtime configuration, and post-deploy verification."
-nickname_candidates = ["Release", "DevOps"]
-
-[agents.frontend_ui_implementer]
-config_file = ".codex/agents/frontend_ui_implementer.toml"
-description = "Vue and Nuxt presentation work focused on components, layout, styling, accessibility, and responsive behavior."
-nickname_candidates = ["UI", "Frontend UI"]
-
-[agents.frontend_data_validation_implementer]
-config_file = ".codex/agents/frontend_data_validation_implementer.toml"
-description = "Vue and Nuxt client logic focused on typed API access, async-data flows, Pinia state, forms, and validation."
-nickname_candidates = ["Frontend Data", "Forms"]
-
-[agents.frontend_implementer]
-config_file = ".codex/agents/frontend_implementer.toml"
-description = "Generalist Vue and Nuxt frontend implementation when UI and client-side logic are tightly coupled."
-nickname_candidates = ["Frontend", "Generalist UI"]
-
-[agents.integration_contract_keeper]
-config_file = ".codex/agents/integration_contract_keeper.toml"
-description = "Cross-boundary API contract ownership for DTOs, OpenAPI surfaces, TypeScript consumers, pagination, and errors."
-nickname_candidates = ["Contracts", "Integrator"]
-
-[agents.qa_debugger]
-config_file = ".codex/agents/qa_debugger.toml"
-description = "Bug reproduction, regression isolation, failing tests, browser-based verification, and cross-layer debugging."
-nickname_candidates = ["QA", "Debugger"]
-
-[agents.reviewer_guard]
-config_file = ".codex/agents/reviewer_guard.toml"
-description = "Read-only code review focused on bugs, regressions, architecture drift, migration risk, and missing tests."
-nickname_candidates = ["Reviewer", "Guard"]

@@ -1,0 +1,33 @@
+id: bugfix
+goal: Reproduce, isolate, fix, and verify a backend defect with minimal blast radius.
+sequence:
+  - role: tech_lead_orchestrator
+    output: scoped bugfix plan
+  - role: qa_debugger
+    phase: reproduce
+    output: reproduction status and failing case
+  - role: backend_implementer
+    optional_when: backend behavior contributes to the defect
+    output: backend fix across controller, service, repository, or UoW layers
+  - role: db_migration_owner
+    optional_when: schema or data changes are part of the fix
+    output: migration and rollback notes
+  - role: devops_release_owner
+    optional_when: CI, config, deployment, or test-environment assumptions are involved
+    output: environment parity and rollout notes
+  - role: qa_debugger
+    phase: verify
+    output: post-fix verification and adjacent regression check
+  - role: reviewer_guard
+    output: regression review
+done_when:
+  - the defect is reproduced or its absence is justified
+  - the fix is verified against the failing case
+  - adjacent regressions are checked
+error_handling:
+  cannot_reproduce: qa_debugger documents attempted steps and environment assumptions before requesting more context
+  incomplete_handoff: return to the producing role before the next role starts
+  boundary_widened: stop and route back to tech_lead_orchestrator to split structural prep or scope
+  wrong_landing_zone_detected: stop and return to tech_lead_orchestrator before more edits are made
+  reviewer_guard_blocks: stop and surface Critical or High findings; selected Medium findings require requester disposition before merge
+  fix_widens_scope: route to tech_lead_orchestrator to decide whether to create a separate task

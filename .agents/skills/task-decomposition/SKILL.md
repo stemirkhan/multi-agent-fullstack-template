@@ -22,6 +22,7 @@ Use this skill when one request should be broken into separate work packets inst
 - Add a reviewer or debugger pass when the blast radius is high.
 - When the target file is already overloaded, add a structural-prep packet first so the feature lands in the right module shape.
 - When a broad UoW, repository, or service already spans multiple capability families, create a structural-prep packet first to extract family ports, landing zones, or compatibility facades before behavior work.
+- Do not split a cohesive end-to-end backend feature merely because it touches controller, service, port, and infrastructure layers; split when separate ownership, sequencing, or risk control provides a concrete benefit.
 
 ## Ownership Rules
 
@@ -29,7 +30,7 @@ Use this skill when one request should be broken into separate work packets inst
 - Shared contracts should have an explicit owner, not “everyone touches it”.
 - Reviewers are read-only unless explicitly reassigned to patch.
 - Migration and devops changes deserve dedicated ownership when production risk exists.
-- In scaffolding repos, keep canonical ownership in `agents/roles`, executable instructions in `.codex/agents`, and sequencing in `workflows/`.
+- In scaffolding repos, keep canonical Codex role instructions in `.codex/agents`, reusable implementation guidance in the shared skills layer, and sequencing in the workflow layer.
 
 ## Dependency Mapping
 
@@ -37,9 +38,10 @@ Use this skill when one request should be broken into separate work packets inst
 - Service or domain behavior before transport mapping when backend logic changes.
 - Schema expansion before app rollout when database compatibility matters.
 - API contract changes before service consumers when shared shapes change.
-- Role-manifest updates before workflow or `.codex` updates when scaffolding ownership is being changed.
+- Canonical `.codex/agents` updates before workflow routing changes when scaffolding ownership changes.
 - Compatibility facade creation before broad import migration when splitting a shared module.
 - Port extraction and landing-zone choice before feature logic when boundary direction or dependency shape is changing.
+- Do not classify expected DTO, repository, controller, or wiring work in an already planned end-to-end feature as boundary widening.
 
 ## Work Packet Format
 
@@ -58,6 +60,7 @@ Each packet should include:
 - Handoffs should name changed files, contract assumptions, tests run, and residual risks.
 - Do not hand off vague statements like “backend done”.
 - Escalate when two packets need the same write scope or when acceptance criteria conflict.
+- If implementation discovers an unplanned dependency direction change, new capability family, or wrong landing zone, pause that branch and add a structural-prep packet before continuing behavior work.
 
 ## Output Contract
 

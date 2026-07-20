@@ -1,0 +1,131 @@
+schema_version = 1
+base_config = ".codex/config.toml"
+
+[profiles.full]
+agents_template = "templates/project-AGENTS.md"
+agents = [
+  "backend_implementer",
+  "db_migration_owner",
+  "devops_release_owner",
+  "frontend_data_validation_implementer",
+  "frontend_implementer",
+  "frontend_ui_implementer",
+  "integration_contract_keeper",
+  "qa_debugger",
+  "reviewer_guard",
+  "tech_lead_orchestrator",
+]
+skills = [
+  "agent-browser",
+  "api-contracts",
+  "backend-dtos",
+  "backend-exceptions",
+  "backend-feature",
+  "backend-logging",
+  "backend-structure",
+  "code-review",
+  "codex-review-loop",
+  "db-migration",
+  "devops-release",
+  "dishka-di",
+  "fastapi-controllers",
+  "frontend-data-access",
+  "frontend-feature",
+  "frontend-forms-and-validation",
+  "frontend-structure",
+  "pinia",
+  "project-conventions",
+  "repo-intake",
+  "service-layer",
+  "sqlalchemy-repositories",
+  "task-decomposition",
+  "test-debug",
+  "unit-of-work",
+  "vue",
+  "web-design-guidelines",
+]
+stack = [
+  { source = "stack/default-stack.yaml", target = "stack/default-stack.yaml" },
+]
+workflows = [
+  { source = "workflows/bugfix.yaml", target = "workflows/bugfix.yaml" },
+  { source = "workflows/feature-delivery.yaml", target = "workflows/feature-delivery.yaml" },
+  { source = "workflows/refactor.yaml", target = "workflows/refactor.yaml" },
+]
+
+[profiles.backend]
+agents_template = "templates/project-AGENTS.backend.md"
+agents = [
+  "backend_implementer",
+  "db_migration_owner",
+  "devops_release_owner",
+  "qa_debugger",
+  "reviewer_guard",
+  "tech_lead_orchestrator",
+]
+skills = [
+  "agent-browser",
+  "api-contracts",
+  "backend-dtos",
+  "backend-exceptions",
+  "backend-feature",
+  "backend-logging",
+  "backend-structure",
+  "code-review",
+  "codex-review-loop",
+  "db-migration",
+  "devops-release",
+  "dishka-di",
+  "fastapi-controllers",
+  "project-conventions",
+  "repo-intake",
+  "service-layer",
+  "sqlalchemy-repositories",
+  "task-decomposition",
+  "test-debug",
+  "unit-of-work",
+]
+stack = [
+  { source = "stack/default-stack.yaml", target = "stack/default-stack.yaml" },
+]
+workflows = [
+  { source = "distribution/workflows/backend/bugfix.yaml", target = "workflows/bugfix.yaml" },
+  { source = "distribution/workflows/backend/feature-delivery.yaml", target = "workflows/feature-delivery.yaml" },
+  { source = "distribution/workflows/backend/refactor.yaml", target = "workflows/refactor.yaml" },
+]
+
+[profiles.frontend]
+agents_template = "templates/project-AGENTS.frontend.md"
+agents = [
+  "frontend_data_validation_implementer",
+  "frontend_implementer",
+  "frontend_ui_implementer",
+  "qa_debugger",
+  "reviewer_guard",
+  "tech_lead_orchestrator",
+]
+skills = [
+  "agent-browser",
+  "api-contracts",
+  "code-review",
+  "codex-review-loop",
+  "frontend-data-access",
+  "frontend-feature",
+  "frontend-forms-and-validation",
+  "frontend-structure",
+  "pinia",
+  "project-conventions",
+  "repo-intake",
+  "task-decomposition",
+  "test-debug",
+  "vue",
+  "web-design-guidelines",
+]
+stack = [
+  { source = "stack/default-stack.yaml", target = "stack/default-stack.yaml" },
+]
+workflows = [
+  { source = "distribution/workflows/frontend/bugfix.yaml", target = "workflows/bugfix.yaml" },
+  { source = "distribution/workflows/frontend/feature-delivery.yaml", target = "workflows/feature-delivery.yaml" },
+  { source = "distribution/workflows/frontend/refactor.yaml", target = "workflows/refactor.yaml" },
+]

@@ -9,13 +9,13 @@ Use this skill when a change crosses the backend/frontend contract boundary and 
 
 ## Responsibilities
 
-- Keep public request and response shapes explicit and stable.
+- Keep public routes, methods, statuses, headers, auth declarations, request and response shapes, and documented errors explicit and stable.
 - Coordinate backend DTO changes, OpenAPI changes, and frontend consumer impact.
 - Surface compatibility risk early instead of after UI or backend implementation diverges.
 
 ## Default Workflow
 
-1. Identify the contract surface that is changing: request, response, error body, pagination, filtering, auth context, or generated client type.
+1. Identify the contract surface that is changing: route/method, status, header, auth, request, response, documented error, pagination, filtering, or generated client type.
 2. Decide whether the change is additive, behavior-changing, or breaking.
 3. Update backend DTOs and transport definitions first.
 4. Regenerate or update TypeScript client types if the project uses them.
@@ -35,11 +35,11 @@ Use this skill when a change crosses the backend/frontend contract boundary and 
 - Add new fields before removing old ones when staged rollout is possible.
 - If old and new consumers must coexist, keep the response compatible long enough for rollout.
 - Coordinate schema changes with frontend cache, forms, and validation assumptions.
-- Treat error-body changes as contract changes, not incidental details.
+- Treat route, status, header, auth, and error-body changes as contract changes, not incidental details.
 
 ## Verification
 
-- Verify backend serialization matches the intended public shape.
+- Verify emitted OpenAPI and backend serialization match the intended public contract.
 - Verify generated or handwritten TypeScript clients match the backend contract.
 - Verify frontend consumers still parse and render the changed data correctly.
 - Add or update contract-sensitive tests where the risk is material.

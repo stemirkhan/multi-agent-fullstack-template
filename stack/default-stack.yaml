@@ -1,25 +1,75 @@
 name: fastapi-sqlalchemy-dishka-vue
 
+metadata:
+  schema_version: 1
+  contract_version: 1
+  status: canonical-default
+  source_of_truth: stack/default-stack.yaml
+  version_policy: declare required capabilities and supported major lines; target projects own tested dependency pins
+  synchronization:
+    - Update this contract before derived conventions, skills, agents, workflows, templates, and documentation.
+    - Record intentional project-specific deviations in the target project's local instructions.
+
 backend:
   language: python
-  runtime: python-3.12+
+  runtime:
+    baseline: python-3.12
+    policies:
+      - Each target project declares and tests a finite supported Python minor range.
+      - Dependency pins and the CI matrix define verified compatibility; do not infer support from an open-ended version range.
   framework: fastapi
   orm: sqlalchemy-2.x
   migrations: alembic
   dependency_injection: dishka
+  validation_and_settings:
+    library: pydantic-v2
+    policies:
+      - Use typed Pydantic models for transport DTOs and typed settings for configuration.
+      - Validate required configuration at startup and reject invalid or ambiguous environments.
+      - Keep transport validation separate from application and domain invariants.
+  async_execution:
+    mode: async-first
+    policies:
+      - Keep request, service, repository, and transaction paths async when they perform I/O.
+      - Isolate blocking libraries behind explicit adapters and keep blocking work off the event loop.
+      - Make session, transaction, and resource ownership explicit in providers and Unit of Work implementations.
   architecture:
     transport: controllers translate HTTP only
-    application: services own use cases
-    transactions: unit-of-work abstraction
-    persistence: repositories behind unit of work
-    contracts: dedicated DTO layer
-    errors: explicit application and domain exceptions
-    observability: structured logging
+    application: services own use cases and depend on application ports
+    transactions: explicit Unit of Work for writes
+    persistence: SQLAlchemy adapters implement application repository ports; writers participate in the Unit of Work
+    contracts: dedicated DTOs remain separate from ORM and transport glue
+    errors: explicit application and domain exceptions mapped at the transport boundary
+    dependency_direction: transport and infrastructure depend inward; application does not import infrastructure
+    ports:
+      - Keep port families narrow and capability-oriented.
+      - Separate reader, writer, provider, and policy seams when their responsibilities diverge.
+      - Keep rich read-model and response projection on reader or query seams instead of widening mutation ports.
+  testing:
+    unit: exercise application services against fakes or test ports
+    integration: exercise repositories, Unit of Work, DI, and migrations against an isolated test database or transaction scope
+    api: verify public response shapes, stable errors, auth behavior, and serialization
+    policies:
+      - Fail fast when a persistence test resolves to a development, shared, or production-like database target.
+      - Cover explicit commit and rollback behavior for material write paths.
+      - Test async lifecycle and provider wiring through the same abstract seams consumed by services.
+  security:
+    - Enforce authentication and authorization at explicit boundaries; do not rely on UI restrictions.
+    - Validate untrusted input and keep secrets, credentials, and sensitive payloads out of logs and public errors.
+    - Configure CORS, cookies, CSRF defenses, and trusted proxies deliberately for the deployment model.
+    - Keep dependency and migration security checks available to target-project CI.
+  observability:
+    - Emit structured logs at request, use-case, integration, and failure boundaries.
+    - Propagate request or trace correlation through async calls where available.
+    - Expose health signals and add metrics or traces for material latency, failure, and dependency seams.
+    - Keep telemetry useful and bounded; redact secrets and avoid duplicate raw payload logging.
   guardrails:
-    - Controllers should call services, not repositories directly.
-    - Services should not leak ORM sessions into outer layers.
-    - DTOs should not be replaced with raw ORM models in API boundaries.
-    - Transaction boundaries should be explicit and testable.
+    - Controllers call services, not repositories or sessions.
+    - Application modules do not import infrastructure implementations, ORM models, DI wiring, or framework adapters.
+    - Repositories do not create independent sessions or commit transactions.
+    - Extract or confirm the relevant application port before adding a new external dependency family or cross-boundary capability seam.
+    - Choose the landing zone before editing and complete structural prep before behavior when a boundary must change.
+    - Planned end-to-end work may span layers; pause only when implementation reveals unplanned boundary widening or ownership conflicts.
 
 frontend:
   language: typescript
@@ -32,10 +82,41 @@ frontend:
   architecture:
     ui: prefer existing components and slots before custom primitives
     data_access: centralize typed API access in composables and feature-level data-access modules
-    composition: keep route views and screen-level entry components thin and push reusable behavior into composables and stores
-    typing: strong static typing at API, props, emits, and store boundaries
-    state: use Pinia for shared cross-feature state, not screen-local transient state
+    composition: keep route views and screen-level entry components thin
+    typing: keep API, props, emits, slots, composables, and stores statically typed
+    state:
+      server: own remote data, request status, refresh, and invalidation in typed data-access or query seams
+      client: use Pinia only for shared client-owned state that crosses feature or route boundaries
+      local: keep transient presentation and form state close to the component or composable that owns it
+  testing:
+    unit: exercise typed utilities, composables, schemas, and stores at their ownership seams
+    component: verify rendering, interactions, accessibility semantics, and async states
+    flow: use browser-driven verification for material user workflows when code-level tests are insufficient
+    policies:
+      - Cover loading, empty, error, success, disabled, and retry states when affected.
+      - Verify post-write refresh, invalidation, optimistic rollback, and duplicate-submit behavior when relevant.
+      - Keep browser automation optional and conditional on the tool being installed and the browser being the right validation seam.
+  security:
+    - Do not ship secrets or privileged policy decisions in client code.
+    - Keep cookie, token, storage, and browser-only behavior explicit at the feature boundary.
+    - Render untrusted content safely and preserve framework escaping unless sanitization is intentional and tested.
+    - Avoid logging sensitive user or transport data in browser telemetry.
+  observability:
+    - Normalize transport failures at the data-access boundary while preserving machine-readable semantics.
+    - Separate user-facing feedback from diagnostic telemetry.
+    - Capture actionable client failures and performance signals without duplicating sensitive payloads.
   guardrails:
     - Keep fetch calls and API-client usage out of leaf presentation components.
-    - Avoid Pinia stores for local state that belongs in a component or composable.
-    - Keep browser-only behavior and environment-specific integrations explicit at the feature boundary.
+    - Do not copy server state into Pinia without a deliberate ownership and synchronization policy.
+    - Avoid Pinia for local state that belongs in a component or composable.
+    - Keep schema, field names, backend error mapping, and submit side effects aligned.
+    - Choose the landing zone before editing and complete structural prep before adding a second unrelated feature family.
+
+api_contract:
+  authority: emitted FastAPI OpenAPI derived from explicit DTO, route, status, header, authentication, and documented error declarations
+  consumer: typed frontend client and integration adapters
+  policies:
+    - Treat request, response, route, status, header, authentication, pagination, enum, nullability, and error-shape changes as public contract changes.
+    - Prefer additive changes and document migration or coexistence for breaking changes.
+    - Update producers and consumers in the same workstream when practical.
+    - When schema or client generation is used, regenerate artifacts and make CI fail on contract drift.

@@ -10,15 +10,15 @@ an adversarial Codex CLI audit of a PR, branch diff, or local working tree.
 
 ## Inputs
 
-- `--pr <N>` for a GitHub pull request
+- `--pr <N>` for a GitHub pull request whose exact head commit is currently checked out
 - `--base <branch>` for a branch diff against a base
 - `--uncommitted` for the current working tree
 
 ## Workflow
 
-1. Resolve the review scope and base branch.
-2. Run `scripts/codex-subagent.sh` to execute `codex exec review`.
-3. Normalize the raw findings with `references/schemas/review-findings.md`.
+1. Resolve the review scope and base commit.
+2. Run `scripts/codex-subagent.sh` to execute `codex exec review` in a read-only sandbox.
+3. Validate the final response with `references/schemas/review-findings.schema.json`.
 4. Cross-check findings against:
    - `.agents/skills/code-review/SKILL.md`
    - `.agents/skills/project-conventions/conventions.md`
@@ -30,11 +30,14 @@ an adversarial Codex CLI audit of a PR, branch diff, or local working tree.
 
 - `references/prompts/adversarial-review.md`
 - `references/schemas/review-findings.md`
+- `references/schemas/review-findings.schema.json`
 - `.agents/skills/code-review/SKILL.md`
 - `.agents/skills/project-conventions/conventions.md`
 
 ## Notes
 
 - `codex` CLI is required.
-- `gh` is optional, but useful for PR metadata and base-branch discovery.
+- `gh` is required only for `--pr`; the script verifies that the exact PR head commit is checked out and reviews against the exact PR base OID, refusing stale or unavailable objects.
+- Python 3 is used for a local validation pass over the JSON returned by Codex; invalid or schema-incompatible output is rejected.
+- Review mode stays read-only. Workspace-write access belongs to a separate, explicitly requested fix pass.
 - Prefer repo-native lint, type-check, and test commands over hard-coded commands.

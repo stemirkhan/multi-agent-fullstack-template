@@ -1,43 +1,43 @@
 id: refactor
 goal: Reshape code safely without changing intended behavior or breaking contracts.
 sequence:
-  - role: tech-lead-orchestrator
+  - role: tech_lead_orchestrator
     output: refactor boundary and invariants
-  - role: integration-contract-keeper
+  - role: integration_contract_keeper
     output: DTO and frontend consumer freeze or migration strategy
-  - role: reviewer-guard
+  - role: reviewer_guard
     optional_when: service, repository, UoW, DI, port, component, store, or data-access boundaries are being reshaped
     output: boundary sanity check before implementation
-  - role: backend-implementer
+  - role: backend_implementer
     optional_when: backend surfaces are involved
     output: backend refactor across service, repository, and UoW seams
-  - role: frontend-ui-implementer
+  - role: frontend_ui_implementer
     optional_when: presentation components, layout composition, styling structure, or accessibility seams are involved
     output: frontend UI refactor across component and layout seams
-  - role: frontend-data-validation-implementer
+  - role: frontend_data_validation_implementer
     optional_when: client data access, async-data, store, form, or validation seams are involved
     output: frontend client-logic refactor across typed data, store, and validation seams
-  - role: frontend-implementer
+  - role: frontend_implementer
     optional_when: frontend surfaces are involved but remain too small or too coupled to split safely
     output: mixed frontend refactor across component, composable, store, and form seams
-  - role: db-migration-owner
+  - role: db_migration_owner
     optional_when: persistence shape changes
     output: Alembic migration strategy or no-op confirmation
-  - role: devops-release-owner
+  - role: devops_release_owner
     optional_when: CI, config, deployment, rollback, or test-environment assumptions are touched by the refactor
     output: environment parity and rollback safety notes
-  - role: qa-debugger
+  - role: qa_debugger
     output: regression safety check
-  - role: reviewer-guard
+  - role: reviewer_guard
     output: final risk review
 done_when:
   - external behavior remains within agreed invariants
   - tests cover the changed seams
   - rollback or fallback paths are clear
 error_handling:
-  invariant_violated: stop immediately; route back to tech-lead-orchestrator to redefine the refactor boundary
-  contract_broken: route to integration-contract-keeper before any further code changes
-  boundary_widened: stop and route back to tech-lead-orchestrator to split structural prep or narrow the refactor before continuing
-  wrong_landing_zone_detected: stop and return to tech-lead-orchestrator to choose a safer landing zone before more edits are made
+  invariant_violated: stop immediately; route back to tech_lead_orchestrator to redefine the refactor boundary
+  contract_broken: route to integration_contract_keeper before any further code changes
+  boundary_widened: stop and route back to tech_lead_orchestrator to split structural prep or narrow the refactor before continuing
+  wrong_landing_zone_detected: stop and return to tech_lead_orchestrator to choose a safer landing zone before more edits are made
   incomplete_handoff: return to the producing role before proceeding to the next step
-  reviewer_guard_blocks: do not merge; surface findings to the requester for prioritization
+  reviewer_guard_blocks: stop and surface Critical or High findings; selected Medium findings require requester disposition before merge

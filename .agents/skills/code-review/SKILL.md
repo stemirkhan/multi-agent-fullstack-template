@@ -45,7 +45,27 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 - Logging is structured, useful, and does not leak secrets.
 - Alembic or schema changes preserve compatibility and rollback reality.
 - Test and CI paths use an isolated test profile and do not silently point at an app database.
-- If the repo includes agent scaffolding, check parity across `agents/roles`, `.codex/agents`, `workflows/`, and integrity scripts.
+- If the repo includes agent scaffolding, check parity across `.codex/agents`, the shared skills layer, workflows, project templates, and integrity scripts.
+
+## Frontend Review Rubric
+
+- Route views and screen-level components stay thin; presentation leaves do not own transport or cross-feature orchestration.
+- Props, emits, slots, composables, store actions, and API clients remain explicitly typed without avoidable `any` or silent coercion.
+- Server state, request status, refresh, and invalidation stay in data-access/query seams; Pinia is reserved for shared client-owned state.
+- Local presentation and form state has not been promoted to a store without a real cross-feature ownership need.
+- Async flows handle relevant loading, empty, error, success, disabled, retry, stale-response, and duplicate-submit states.
+- Writes define refresh, invalidation, optimistic update, and rollback behavior so dependent views cannot silently stay stale.
+- Forms use one schema and preserve backend validation, conflict, forbidden, and form-level error semantics.
+- Components reuse the existing design system and preserve semantic HTML, labels, focus behavior, keyboard access, and responsive states.
+- Browser-only APIs, cookies, tokens, and storage have an explicit ownership boundary and do not expose secrets or privileged policy in the client.
+- Untrusted content remains escaped or passes through an intentional, tested sanitization boundary.
+
+## Contract And Operational Review
+
+- Request, response, route, status, header, authentication, pagination, enum, nullability, default, and documented error changes are reflected in emitted OpenAPI and affected typed consumers.
+- Generated schemas or clients are refreshed and drift checks remain effective when the project uses generation.
+- Authentication and authorization remain enforced by the backend rather than inferred from hidden UI controls.
+- Logs and telemetry preserve useful correlation and machine-readable errors without sensitive payloads or duplicate noise.
 
 ## Common Regression Patterns
 
@@ -65,6 +85,12 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 - A new feature was appended to a generic file like `auth.py`, `models.py`, or `settings.py` even though it introduced a new use-case family or bounded context.
 - A refactor moved symbols across modules without keeping a compatibility facade for stable imports.
 - Tests remained in a generic bucket even after the runtime code was clearly organized by domain.
+- A leaf component now fetches, mutates, redirects, and renders in one coupled path.
+- Server responses or request status were copied into Pinia, creating two caches without an invalidation policy.
+- A write succeeds but dependent queries, stores, or views remain stale.
+- A form duplicates its schema or flattens every backend failure into one generic message.
+- A component change breaks focus, keyboard interaction, labels, responsive layout, or an async state that the happy path hides.
+- Client code stores sensitive credentials, trusts UI-only authorization, or renders unsanitized untrusted HTML.
 
 ## Architectural Growth Review
 
@@ -72,6 +98,7 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 - Treat “wrong landing zone” as a maintainability risk when the repo already has clearer domain boundaries available.
 - Call out missing structural-prep work when a feature should have started with a split before implementation.
 - Treat deferred port extraction or hidden boundary surgery inside a behavior patch as a review finding, not as harmless cleanup debt.
+- Apply the same test to frontend growth: split a view, composable, store, or data-access module before it absorbs a second unrelated feature family.
 
 ## Testing Review
 
@@ -82,7 +109,17 @@ Use this skill when reviewing a change set before merge, release, or handoff.
 - For persistence changes, look for migration and repository verification.
 - If CI or local test entrypoints changed, check that the effective DB target is still a dedicated test database.
 - For persistence-affecting refactors, verify the test DB safeguard or fail-fast guard still prevents accidental use of dev or shared app databases.
+- For frontend data changes, look for refresh/invalidation, race, stale-response, optimistic rollback, and error-state coverage.
+- For component and form changes, look for interaction, accessibility, validation, duplicate-submit, and state-reset coverage.
+- For shared-state changes, verify initialization, hydration if applicable, reset, and ownership boundaries.
 - If tests were not run, treat that as residual risk and say so explicitly.
+
+## Browser Validation
+
+- Use browser automation only if `agent-browser` is installed and a real DOM, navigation, download, screenshot, login, or browser-runtime path is the smallest reliable validation seam.
+- Prefer type checks and focused unit, composable, component, API, or integration tests for logic that does not require a browser.
+- Treat browser evidence as complementary for risky flows, not as a substitute for deterministic regression coverage.
+- If browser automation is unavailable but material UI risk remains, record the exact manual or project-native end-to-end verification gap.
 
 ## Review Output
 

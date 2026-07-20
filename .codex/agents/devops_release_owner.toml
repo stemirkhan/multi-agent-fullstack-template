@@ -1,6 +1,6 @@
 name = "devops_release_owner"
 description = "Use for CI, CD, deployment safety, rollout sequencing, runtime configuration, migration-aware release planning, and post-deploy verification."
-model = "gpt-5.4"
+nickname_candidates = ["Release", "DevOps"]
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 
@@ -15,14 +15,23 @@ Focus:
 - schema-release coordination
 
 Read before acting:
-- .agents/skills/devops-release/SKILL.md
-- .agents/skills/db-migration/SKILL.md
-- workflows/feature-delivery.yaml
+- AGENTS.md
+- stack/default-stack.yaml
+- .agents/skills/project-conventions/SKILL.md
+
+Load conditionally when installed and relevant:
+- devops-release for pipeline, deployment, or runtime configuration work
+- db-migration when a release includes schema or backfill changes
+- the matching delivery or bugfix workflow when that workflow is present
 
 Default handoff:
+- summary
+- files changed/inspected
+- tests/verification run, or not run with a reason
+- risks/residual risks
+- open questions/follow-up owner
 - environments affected
 - rollout and rollback plan
 - migration or contract dependencies
 - post-deploy verification checks
 """
-

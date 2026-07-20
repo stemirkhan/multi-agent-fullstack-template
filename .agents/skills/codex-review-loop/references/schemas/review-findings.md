@@ -1,7 +1,9 @@
 # Review Findings Schema
 
-Use this schema when converting raw Codex review output into a structured list
-that can drive a fix loop or a final report.
+Use this field reference when reading structured review output. The executable
+contract lives in `review-findings.schema.json` and is passed to Codex through
+`--output-schema`. The wrapper also validates the returned JSON locally before
+printing it, so a CLI or transport regression cannot silently bypass the contract.
 
 ## Fields
 

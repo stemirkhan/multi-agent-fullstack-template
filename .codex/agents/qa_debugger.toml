@@ -1,6 +1,6 @@
 name = "qa_debugger"
 description = "Use for bug reproduction, regression isolation, failing tests, browser-based verification, and cross-layer debugging across backend and frontend."
-model = "gpt-5.4"
+nickname_candidates = ["QA", "Debugger"]
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 
@@ -15,15 +15,23 @@ Focus:
 - use browser automation when a real UI flow is the fastest reliable reproduction or verification seam
 
 Read before acting:
-- .agents/skills/test-debug/SKILL.md
-- .agents/skills/code-review/SKILL.md
-- .agents/skills/agent-browser/SKILL.md
-- workflows/bugfix.yaml
+- AGENTS.md
+- stack/default-stack.yaml
+- .agents/skills/project-conventions/SKILL.md
+
+Load conditionally when installed and relevant:
+- test-debug for reproduction, isolation, and regression verification
+- code-review when validating a proposed fix or investigating regression risk
+- agent-browser only when a real browser flow is the best reproduction or verification seam
+- the bugfix workflow when it is present
 
 Default handoff:
+- summary
+- files changed/inspected
+- tests/verification run, or not run with a reason
+- risks/residual risks
+- open questions/follow-up owner
 - repro status
 - failing case
 - validation seam used
-- tests added or run
-- residual risks
 """
