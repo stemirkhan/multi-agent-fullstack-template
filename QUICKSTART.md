@@ -63,7 +63,6 @@ After a full install, the target contains:
 your-project/
   AGENTS.md
   .codex/
-    config.toml
     agents/
       ...
   .agents/
@@ -78,6 +77,16 @@ your-project/
 Backend and frontend profiles install profile-specific workflows containing
 only available roles. Their agents still discover installed roles before
 delegating and load task-specific skills conditionally.
+
+Codex discovers these standalone agent files without a shared configuration.
+The installer leaves any existing `.codex/config.toml` untouched, including
+with `--force`. Current Codex releases enable subagents by default; availability
+and concurrency limits follow your existing configuration and Codex defaults.
+Role-specific settings remain in the individual agent files.
+
+Earlier installs may have copied `.codex/config.toml`. Reinstalling does not
+delete it; review and remove obsolete template settings yourself if you want
+to use Codex defaults, preserving any project-specific settings you added.
 
 ## Customize The Target Project
 
@@ -140,7 +149,6 @@ profile.
   commit keeps installed files and reports that cleanup was interrupted; temporary
   files may remain. Both interruption paths exit with status 130. Installs are not
   crash-consistent across `SIGKILL`, host failure, or power loss.
-- Project `.codex/config.toml` is loaded only for a trusted project.
 - Reusable agent files intentionally inherit the parent model rather than
   pinning an entitlement-specific model id.
 - The architecture contract lives in `stack/default-stack.yaml`.

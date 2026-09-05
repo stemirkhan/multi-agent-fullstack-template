@@ -191,9 +191,6 @@ def build_profile_plan(
             f"unknown profile {profile_name!r}; available profiles: {available}"
         )
 
-    base_config = _safe_source(root, manifest.get("base_config"), "base_config")
-    if not base_config.is_file():
-        raise DistributionError("base_config must be a file")
     template = _safe_source(
         root,
         profile.get("agents_template"),
@@ -208,10 +205,7 @@ def build_profile_plan(
             f"{PROFILE_AGENT_TEMPLATES[profile_name].as_posix()}"
         )
 
-    operations = [
-        CopyOperation(base_config, Path(".codex/config.toml")),
-        CopyOperation(template, Path("AGENTS.md")),
-    ]
+    operations = [CopyOperation(template, Path("AGENTS.md"))]
 
     for agent in _string_list(profile, "agents", profile_name):
         source = _safe_source(

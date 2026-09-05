@@ -378,7 +378,7 @@ def _iter_yaml_strings(value: Any) -> Any:
 
 
 def _validate_toml_files(root: Path, issues: list[Issue]) -> None:
-    paths = sorted((root / ".codex").rglob("*.toml"))
+    paths = sorted((root / ".codex/agents").rglob("*.toml"))
     paths.extend(sorted((root / "distribution").rglob("*.toml")))
     for path in paths:
         _load_toml(root, path, issues)
@@ -551,70 +551,6 @@ def _validate_stack(root: Path, issues: list[Issue]) -> None:
         _require_string_list(
             api_contract, "policies", display, "stack.api_contract", issues
         )
-
-
-def _config_references(config: dict[str, Any]) -> tuple[str, ...]:
-    agents = config.get("agents", {})
-    if not isinstance(agents, dict):
-        return ()
-    references: list[str] = []
-    for value in agents.values():
-        if isinstance(value, dict) and isinstance(value.get("config_file"), str):
-            references.append(value["config_file"])
-    return tuple(references)
-
-
-def _validate_configs(root: Path, issues: list[Issue]) -> None:
-    config_paths = {root / ".codex/config.toml"}
-    manifest = _load_toml(root, root / "distribution/profiles.toml", issues)
-    if manifest and isinstance(manifest.get("base_config"), str):
-        config_paths.add(root / manifest["base_config"])
-
-    for config_path in sorted(config_paths):
-        config = _load_toml(root, config_path, issues)
-        if config is None:
-            continue
-        display = _display_path(root, config_path)
-        features = config.get("features")
-        if not isinstance(features, dict) or features.get("multi_agent") is not True:
-            issues.append(Issue(display, "features.multi_agent must be true"))
-        agents_config = config.get("agents")
-        if not isinstance(agents_config, dict):
-            issues.append(Issue(display, "agents must be a configuration table"))
-        else:
-            for key in ("max_threads", "max_depth"):
-                value = agents_config.get(key)
-                if type(value) is not int or value < 1:
-                    issues.append(
-                        Issue(display, f"agents.{key} must be a positive integer")
-                    )
-            for role, value in agents_config.items():
-                if isinstance(value, dict) and "config_file" in value:
-                    issues.append(
-                        Issue(
-                            display,
-                            "nested agents.*.config_file is not allowed; project agents "
-                            f"are auto-discovered from .codex/agents (found {role!r})",
-                        )
-                    )
-        for reference in _config_references(config):
-            reference_path = Path(reference)
-            if reference_path.is_absolute() or ".." in reference_path.parts:
-                issues.append(
-                    Issue(
-                        display,
-                        f"config_file is not a safe relative path: {reference}",
-                    )
-                )
-                continue
-            referenced_path = (config_path.parent / reference).resolve()
-            if not referenced_path.is_file():
-                issues.append(
-                    Issue(
-                        display,
-                        f"config_file resolves to missing file: {reference}",
-                    )
-                )
 
 
 def _validate_agents(
@@ -826,18 +762,10 @@ def _validate_canonical_workflows(
         )
 
 
-def _relative_config_target(config_target: Path, reference: str) -> Path | None:
-    candidate = config_target.parent / reference
-    if candidate.is_absolute() or ".." in candidate.parts:
-        return None
-    return candidate
-
-
 def _validate_profile(
     root: Path,
     profile_name: str,
     profile: dict[str, Any],
-    config: dict[str, Any] | None,
     agents: dict[str, tuple[Path, dict[str, Any], tuple[str, ...]]],
     names_by_filename: dict[str, str],
     skills: dict[str, tuple[Path, tuple[tuple[str, bool], ...]]],
@@ -949,18 +877,6 @@ def _validate_profile(
             )
         )
 
-    if config is not None:
-        config_target = Path(".codex/config.toml")
-        for reference in _config_references(config):
-            destination = _relative_config_target(config_target, reference)
-            if destination is None or destination not in destinations:
-                issues.append(
-                    Issue(
-                        display,
-                        f"base config requires omitted or unsafe path {reference!r}",
-                    )
-                )
-
 
 def _validate_profiles(
     root: Path,
@@ -1011,15 +927,12 @@ def _validate_profiles(
                 )
             )
 
-    config_path = root / manifest.get("base_config", "")
-    config = _load_toml(root, config_path, issues) if config_path.is_file() else None
     for profile_name, profile in sorted(profiles.items()):
         if isinstance(profile, dict):
             _validate_profile(
                 root,
                 profile_name,
                 profile,
-                config,
                 agents,
                 names_by_filename,
                 skills,
@@ -1248,7 +1161,6 @@ def validate_repository(root: Path) -> list[Issue]:
         )
     _validate_toml_files(root, issues)
     _validate_stack(root, issues)
-    _validate_configs(root, issues)
     agents, names_by_filename = _validate_agents(root, issues)
     skills = _validate_skills(root, issues)
     _validate_canonical_workflows(root, set(agents), issues)

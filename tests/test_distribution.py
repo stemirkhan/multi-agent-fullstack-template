@@ -101,42 +101,33 @@ class DistributionTests(unittest.TestCase):
             messages,
         )
 
-    def test_explicit_agent_config_registration_is_rejected(self) -> None:
+    def test_repository_integrity_without_shared_codex_config(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            fixture = self.copy_validation_fixture(temporary)
+            (fixture / ".codex/config.toml").unlink(missing_ok=True)
+
+            issues = validate_repository(fixture)
+
+        self.assertEqual([], [issue.render() for issue in issues])
+
+    def test_local_codex_config_is_not_part_of_distribution(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             fixture = self.copy_validation_fixture(temporary)
             config_path = fixture / ".codex/config.toml"
             config_path.write_text(
-                config_path.read_text(encoding="utf-8")
-                + '\n[agents.qa_debugger]\nconfig_file = "agents/qa_debugger.toml"\n',
+                '[agents]\nenabled = false\nmax_concurrent_threads_per_session = 2\n'
+                '[agents.qa_debugger]\nconfig_file = "agents/qa_debugger.toml"\n',
                 encoding="utf-8",
             )
 
             issues = validate_repository(fixture)
+            for profile in REQUIRED_PROFILES:
+                self.assertNotIn(
+                    Path(".codex/config.toml"),
+                    {operation.destination for operation in build_profile_plan(fixture, profile)},
+                )
 
-        messages = [issue.render() for issue in issues]
-        self.assertTrue(
-            any("nested agents.*.config_file is not allowed" in message for message in messages),
-            messages,
-        )
-
-    def test_multi_agent_feature_cannot_be_disabled(self) -> None:
-        with tempfile.TemporaryDirectory() as temporary:
-            fixture = self.copy_validation_fixture(temporary)
-            config_path = fixture / ".codex/config.toml"
-            config_path.write_text(
-                config_path.read_text(encoding="utf-8").replace(
-                    "multi_agent = true", "multi_agent = false", 1
-                ),
-                encoding="utf-8",
-            )
-
-            issues = validate_repository(fixture)
-
-        messages = [issue.render() for issue in issues]
-        self.assertTrue(
-            any("features.multi_agent must be true" in message for message in messages),
-            messages,
-        )
+        self.assertEqual([], [issue.render() for issue in issues])
 
     def test_read_only_agent_cannot_gain_write_sandbox(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -525,7 +516,11 @@ error_handling: []
 
             self.assertEqual(2, result.returncode)
             self.assertIn("DRY-RUN profile=frontend", result.stdout)
-            self.assertIn("COPY .codex/config.toml -> .codex/config.toml", result.stdout)
+            self.assertIn(
+                "COPY .codex/agents/frontend_implementer.toml -> "
+                ".codex/agents/frontend_implementer.toml",
+                result.stdout,
+            )
             self.assertIn("would_overwrite=1", result.stdout)
             self.assertIn("CONFLICT AGENTS.md", result.stderr)
             self.assertEqual("keep me\n", agents_file.read_text(encoding="utf-8"))
@@ -1100,6 +1095,7 @@ error_handling: []
                         if path.is_file()
                     }
                     self.assertEqual(expected, actual)
+                    self.assertNotIn(".codex/config.toml", actual)
                     self._assert_installed_agent_references(target)
                     self._assert_installed_workflow_roles(target)
 
@@ -1112,6 +1108,32 @@ error_handling: []
             self.assertTrue(
                 (base / "full project/.codex/agents/integration_contract_keeper.toml").is_file()
             )
+
+    def test_installer_preserves_existing_codex_config(self) -> None:
+        original = b"[agents]\nenabled = false\nmax_concurrent_threads_per_session = 2\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            for profile in REQUIRED_PROFILES:
+                for mode in ((), ("--force",), ("--dry-run",)):
+                    with self.subTest(profile=profile, mode=mode):
+                        target = Path(temporary) / f"{profile}-{mode}"
+                        config = target / ".codex/config.toml"
+                        config.parent.mkdir(parents=True)
+                        config.write_bytes(original)
+                        before = config.stat()
+
+                        result = self.run_installer(profile, target, *mode)
+
+                        self.assertEqual(0, result.returncode, result.stderr)
+                        self.assertNotIn(".codex/config.toml", result.stdout)
+                        self.assertEqual(original, config.read_bytes())
+                        after = config.stat()
+                        self.assertEqual(before.st_ino, after.st_ino)
+                        self.assertEqual(before.st_mtime_ns, after.st_mtime_ns)
+                        if mode == ("--dry-run",):
+                            self.assertEqual(
+                                [config],
+                                [path for path in target.rglob("*") if path.is_file()],
+                            )
 
     def _assert_installed_agent_references(self, target: Path) -> None:
         for agent_path in sorted((target / ".codex/agents").glob("*.toml")):

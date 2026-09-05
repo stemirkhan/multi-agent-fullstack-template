@@ -23,7 +23,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Install a manifest-defined multi-agent template profile, verifying "
-            "installed destination identities before commit."
+            "installed destination identities before commit. "
+            "Existing .codex/config.toml remains user-owned and is never installed or replaced."
         )
     )
     parser.add_argument(

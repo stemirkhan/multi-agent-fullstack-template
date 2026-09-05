@@ -1,5 +1,6 @@
 schema_version = 1
-base_config = ".codex/config.toml"
+
+# Profiles install standalone agents and leave shared Codex configuration to users.
 
 # All profiles roll back handled failures before commit. After commit, cleanup
 # interruptions retain installed files and must be reported as committed.

@@ -15,6 +15,11 @@ This repository packages a reusable multi-agent setup for projects that want:
 - repeatable multi-agent sequencing through `workflows/`
 - project-level `AGENTS.md` templates for fullstack, backend-only, and frontend-only installs
 
+Agents are discovered from standalone files in `.codex/agents/`; the template
+does not ship a shared `.codex/config.toml`. Multi-agent availability and limits
+come from Codex defaults and the user's existing configuration. Individual
+agent files retain their role-specific settings.
+
 ## TL;DR
 
 Use the safe installer from this repository:
@@ -85,7 +90,6 @@ flowchart LR
 ```text
 AGENTS.md                    # repository maintenance instructions for this template repo
 .codex/
-  config.toml
   agents/                    # canonical Codex subagents
 .agents/
   skills/                    # project-scoped Codex skills
