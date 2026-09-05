@@ -27,6 +27,10 @@ class DistributionError(RuntimeError):
     """Raised when a distribution manifest or install target is unsafe."""
 
 
+class InstallCommittedInterrupt(KeyboardInterrupt):
+    """Raised when cleanup is interrupted after the installation is committed."""
+
+
 class InstallConflict(DistributionError):
     """Raised when an install would overwrite existing files."""
 
@@ -767,6 +771,31 @@ def _stage_operations(
     return staged
 
 
+def _close_install_descriptors(
+    applied: list[_AppliedOperation],
+    root_fd: int | None,
+    target_parent_fd: int | None,
+) -> None:
+    interrupted: KeyboardInterrupt | None = None
+    descriptors = [operation.parent_fd for operation in applied]
+    descriptors.extend(
+        descriptor
+        for descriptor in (root_fd, target_parent_fd)
+        if descriptor is not None
+    )
+    for descriptor in descriptors:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
+        except KeyboardInterrupt as exc:
+            # close() may have released the descriptor already; do not retry it.
+            # Finish closing the other descriptors before propagating the interrupt.
+            interrupted = exc
+    if interrupted is not None:
+        raise interrupted
+
+
 def install_profile(
     root: Path,
     profile_name: str,
@@ -906,9 +935,16 @@ def install_profile(
                     "install committed, but rollback-backup cleanup failed: "
                     + "; ".join(cleanup_errors)
                 )
+        return operations, tuple(
+            sorted(actual_conflicts, key=lambda path: path.as_posix())
+        )
     except BaseException as exc:
         if commit_complete:
-            if isinstance(exc, (KeyboardInterrupt, SystemExit)):
+            if isinstance(exc, KeyboardInterrupt):
+                raise InstallCommittedInterrupt(
+                    "install committed, but cleanup was interrupted"
+                ) from exc
+            if isinstance(exc, SystemExit):
                 raise
             if isinstance(exc, DistributionError):
                 raise
@@ -946,22 +982,11 @@ def install_profile(
             raise
         raise DistributionError(f"install failed and was rolled back: {exc}") from exc
     finally:
-        for operation in applied:
-            try:
-                os.close(operation.parent_fd)
-            except OSError:
-                pass
-        if root_fd is not None:
-            try:
-                os.close(root_fd)
-            except OSError:
-                pass
-        if target_parent_fd is not None:
-            try:
-                os.close(target_parent_fd)
-            except OSError:
-                pass
-
-    return operations, tuple(
-        sorted(actual_conflicts, key=lambda path: path.as_posix())
-    )
+        try:
+            _close_install_descriptors(applied, root_fd, target_parent_fd)
+        except KeyboardInterrupt as exc:
+            if commit_complete:
+                raise InstallCommittedInterrupt(
+                    "install committed, but cleanup was interrupted"
+                ) from exc
+            raise

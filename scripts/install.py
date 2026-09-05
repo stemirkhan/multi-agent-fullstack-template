@@ -9,6 +9,7 @@ import sys
 
 from distribution_lib import (
     DistributionError,
+    InstallCommittedInterrupt,
     InstallConflict,
     REQUIRED_PROFILES,
     install_profile,
@@ -63,6 +64,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  CONFLICT {conflict.as_posix()}", file=sys.stderr)
         print("Re-run with --force only after reviewing every conflict.", file=sys.stderr)
         return 2
+    except InstallCommittedInterrupt:
+        print(
+            "Install committed, but cleanup was interrupted. "
+            "Installed files remain in place; temporary files may remain.",
+            file=sys.stderr,
+        )
+        return 130
     except KeyboardInterrupt:
         print("Install interrupted; applied changes were rolled back.", file=sys.stderr)
         return 130

@@ -26,8 +26,10 @@ python3 scripts/install.py --profile full --target /absolute/path/to/your-projec
 
 Replace `full` with `backend` or `frontend` for a partial install. The installer
 preflights conflicts, refuses silent overwrite, and rolls back handled write
-failures. Applying a profile currently requires Linux or macOS; see the
-[Quickstart](QUICKSTART.md) for the filesystem and crash-consistency limits.
+failures before commit. Interrupting cleanup after commit keeps the installed
+files and reports that state explicitly. Applying a profile currently requires
+Linux or macOS; see the [Quickstart](QUICKSTART.md) for the filesystem and
+crash-consistency limits.
 
 - Fullstack project: install the `full` profile
 - Backend-only project: install the `backend` profile

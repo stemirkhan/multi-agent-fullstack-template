@@ -128,7 +128,10 @@ profile.
 
 ## Notes
 
-- Applied installs roll back handled copy and filesystem errors. They are not
+- Applied installs roll back handled copy and filesystem errors before commit.
+  Ctrl+C before commit rolls back applied changes. Ctrl+C during cleanup after
+  commit keeps installed files and reports that cleanup was interrupted; temporary
+  files may remain. Both interruption paths exit with status 130. Installs are not
   crash-consistent across `SIGKILL`, host failure, or power loss.
 - Project `.codex/config.toml` is loaded only for a trusted project.
 - Reusable agent files intentionally inherit the parent model rather than

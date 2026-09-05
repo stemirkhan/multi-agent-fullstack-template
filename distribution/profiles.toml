@@ -1,6 +1,9 @@
 schema_version = 1
 base_config = ".codex/config.toml"
 
+# All profiles roll back handled failures before commit. After commit, cleanup
+# interruptions retain installed files and must be reported as committed.
+
 [profiles.full]
 agents_template = "templates/project-AGENTS.md"
 agents = [

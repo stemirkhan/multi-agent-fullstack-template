@@ -679,6 +679,166 @@ error_handling: []
             self.assertTrue(failed)
             self.assertFalse(target.exists())
 
+    def test_cli_reports_committed_interrupt_during_backup_cleanup(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            operations = build_profile_plan(ROOT, "frontend")
+            originals = operations[:2]
+            for operation in originals:
+                destination = target / operation.destination
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_text("original\n", encoding="utf-8")
+            original_unlink = distribution_lib.os.unlink
+            backup_unlinks = 0
+
+            def interrupted_unlink(path: object, *args: object, **kwargs: object):
+                nonlocal backup_unlinks
+                if ".template-backup-" in str(path):
+                    backup_unlinks += 1
+                    if backup_unlinks == 2:
+                        raise KeyboardInterrupt
+                return original_unlink(path, *args, **kwargs)
+
+            stderr = StringIO()
+            with mock.patch.object(
+                distribution_lib,
+                "_require_secure_install_primitives",
+            ), mock.patch.object(
+                distribution_lib.os,
+                "unlink",
+                side_effect=interrupted_unlink,
+            ), redirect_stderr(stderr):
+                return_code = install_cli.main(
+                    ["--profile", "frontend", "--target", str(target), "--force"]
+                )
+
+            self.assertEqual(130, return_code)
+            self.assertEqual(2, backup_unlinks)
+            self.assertIn("Install committed", stderr.getvalue())
+            self.assertIn("cleanup was interrupted", stderr.getvalue())
+            self.assertIn("Installed files remain", stderr.getvalue())
+            self.assertNotIn("rolled back", stderr.getvalue())
+            self.assertNotIn("Traceback", stderr.getvalue())
+            for operation in operations:
+                self.assertEqual(
+                    operation.source.read_bytes(),
+                    (target / operation.destination).read_bytes(),
+                )
+            backups = list(target.rglob("*.template-backup-*"))
+            self.assertEqual(1, len(backups))
+            self.assertEqual("original\n", backups[0].read_text(encoding="utf-8"))
+
+    def test_cli_rolls_back_force_install_when_interrupted_before_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            first_destination = build_profile_plan(ROOT, "frontend")[0].destination
+            existing = target / first_destination
+            existing.parent.mkdir(parents=True)
+            existing.write_text("original\n", encoding="utf-8")
+            original_copy = distribution_lib._copy_to_secure_temp
+            calls = 0
+
+            def interrupted_copy(*args: object, **kwargs: object):
+                nonlocal calls
+                calls += 1
+                if calls == 4:
+                    raise KeyboardInterrupt
+                return original_copy(*args, **kwargs)
+
+            stderr = StringIO()
+            with mock.patch.object(
+                distribution_lib,
+                "_copy_to_secure_temp",
+                side_effect=interrupted_copy,
+            ), redirect_stderr(stderr):
+                return_code = install_cli.main(
+                    ["--profile", "frontend", "--target", str(target), "--force"]
+                )
+
+            self.assertEqual(130, return_code)
+            self.assertIn("applied changes were rolled back", stderr.getvalue())
+            self.assertNotIn("Install committed", stderr.getvalue())
+            self.assertEqual("original\n", existing.read_text(encoding="utf-8"))
+            actual = {
+                path.relative_to(target).as_posix()
+                for path in target.rglob("*")
+                if path.is_file() or path.is_symlink()
+            }
+            self.assertEqual({first_destination.as_posix()}, actual)
+
+    def test_cli_reports_committed_interrupt_during_descriptor_cleanup(self) -> None:
+        for interrupted_descriptor in ("operation", "root", "target_parent"):
+            with (
+                self.subTest(descriptor=interrupted_descriptor),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                target = Path(temporary) / "project"
+                operations = build_profile_plan(ROOT, "frontend")
+                original_commit = distribution_lib._commit_staged_file
+                original_verify = distribution_lib._verify_install_root
+                original_close = distribution_lib.os.close
+                descriptors: dict[str, int] = {}
+                operation_descriptors: set[int] = set()
+                closed: set[int] = set()
+                interrupted = False
+
+                def recording_commit(parent_fd: int, *args: object, **kwargs: object):
+                    result = original_commit(parent_fd, *args, **kwargs)
+                    operation_descriptors.add(parent_fd)
+                    descriptors.setdefault("operation", parent_fd)
+                    return result
+
+                def recording_verify(
+                    path: Path,
+                    target_parent_fd: int,
+                    root_fd: int,
+                    identity: tuple[int, int],
+                ) -> None:
+                    descriptors.update(target_parent=target_parent_fd, root=root_fd)
+                    original_verify(path, target_parent_fd, root_fd, identity)
+
+                def interrupted_close(descriptor: int) -> None:
+                    nonlocal interrupted
+                    original_close(descriptor)
+                    if len(operation_descriptors) == len(operations) and (
+                        descriptor in operation_descriptors
+                        or descriptor in descriptors.values()
+                    ):
+                        closed.add(descriptor)
+                        if (
+                            not interrupted
+                            and descriptor == descriptors[interrupted_descriptor]
+                        ):
+                            interrupted = True
+                            raise KeyboardInterrupt
+
+                stderr = StringIO()
+                with mock.patch.object(
+                    distribution_lib, "_commit_staged_file", side_effect=recording_commit
+                ), mock.patch.object(
+                    distribution_lib, "_verify_install_root", side_effect=recording_verify
+                ), mock.patch.object(
+                    distribution_lib.os, "close", side_effect=interrupted_close
+                ), redirect_stderr(stderr):
+                    return_code = install_cli.main(
+                        ["--profile", "frontend", "--target", str(target)]
+                    )
+
+                # Also release remaining descriptors when exercising the unfixed path.
+                expected_descriptors = operation_descriptors | set(descriptors.values())
+                for descriptor in expected_descriptors - closed:
+                    original_close(descriptor)
+                self.assertTrue(interrupted)
+                self.assertEqual(130, return_code)
+                self.assertIn("Install committed", stderr.getvalue())
+                self.assertNotIn("rolled back", stderr.getvalue())
+                self.assertEqual(expected_descriptors, closed)
+                for operation in operations:
+                    self.assertEqual(
+                        operation.source.read_bytes(),
+                        (target / operation.destination).read_bytes(),
+                    )
+
     def test_force_install_rolls_back_on_late_oserror(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "project"
