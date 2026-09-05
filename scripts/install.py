@@ -21,7 +21,10 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Install a manifest-defined multi-agent template profile."
+        description=(
+            "Install a manifest-defined multi-agent template profile, verifying "
+            "installed destination identities before commit."
+        )
     )
     parser.add_argument(
         "--profile",

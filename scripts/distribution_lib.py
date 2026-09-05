@@ -460,6 +460,8 @@ def _open_destination_parent(
 
 
 def _open_existing_parent(root_fd: int, parent: Path) -> int:
+    """Open an existing parent without creating paths or following symlinks."""
+
     current_fd = os.dup(root_fd)
     current_relative = Path()
     try:
@@ -471,7 +473,7 @@ def _open_existing_parent(root_fd: int, parent: Path) -> int:
                 next_fd = os.open(part, _DIRECTORY_OPEN_FLAGS, dir_fd=current_fd)
             except OSError as exc:
                 raise DistributionError(
-                    "cannot securely open rollback parent "
+                    "cannot securely open existing parent "
                     f"{current_relative.as_posix()}: {exc}"
                 ) from exc
             os.close(current_fd)
@@ -606,6 +608,27 @@ def _verify_install_root(
 
 def _installed_identity(parent_fd: int, name: str) -> tuple[int, int]:
     return _path_identity(parent_fd, name)
+
+
+def _verify_applied_destinations(root_fd: int, applied: list[_AppliedOperation]) -> None:
+    """Check each installed path from the anchored root before dropping backups."""
+
+    for operation in applied:
+        parent_fd: int | None = None
+        try:
+            parent_fd = _open_existing_parent(root_fd, operation.destination.parent)
+            if _fd_identity(parent_fd) != _fd_identity(operation.parent_fd):
+                raise DistributionError("parent directory identity changed")
+            if _path_identity(parent_fd, operation.name) != operation.installed_identity:
+                raise DistributionError("file identity changed")
+        except (OSError, DistributionError) as exc:
+            raise DistributionError(
+                "installed destination is unavailable or changed before commit: "
+                f"{operation.destination.as_posix()}: {exc}"
+            ) from exc
+        finally:
+            if parent_fd is not None:
+                os.close(parent_fd)
 
 
 def _commit_staged_file(
@@ -914,6 +937,7 @@ def install_profile(
                     )
                 )
 
+            _verify_applied_destinations(root_fd, applied)
             _verify_install_root(
                 target,
                 target_parent_fd,

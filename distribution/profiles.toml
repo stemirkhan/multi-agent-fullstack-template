@@ -3,6 +3,8 @@ base_config = ".codex/config.toml"
 
 # All profiles roll back handled failures before commit. After commit, cleanup
 # interruptions retain installed files and must be reported as committed.
+# Verify every installed destination and its parent from the anchored target
+# before commit; detected concurrent moves or replacements block completion.
 
 [profiles.full]
 agents_template = "templates/project-AGENTS.md"

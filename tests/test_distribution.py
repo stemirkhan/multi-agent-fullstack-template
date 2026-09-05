@@ -629,6 +629,148 @@ error_handling: []
             self.assertEqual([], list(target.iterdir()))
             self.assertEqual([], list(displaced.iterdir()))
 
+    def test_nested_directory_move_is_detected_before_commit(self) -> None:
+        cases = (
+            ("after_family", "missing"),
+            ("after_last", "missing"),
+            ("after_last", "recreated"),
+            ("after_last", "symlink"),
+        )
+        for timing, replacement in cases:
+            with (
+                self.subTest(timing=timing, replacement=replacement),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                base = Path(temporary)
+                target = base / "project"
+                displaced = base / "moved-agents"
+                operations = build_profile_plan(ROOT, "frontend")
+                first = operations[0]
+                existing = target / first.destination
+                existing.parent.mkdir(parents=True)
+                existing.write_text("original\n", encoding="utf-8")
+                (target / "local.txt").write_text("local\n", encoding="utf-8")
+                (target / ".agents/notes.txt").write_text("notes\n", encoding="utf-8")
+                move_at = (
+                    max(
+                        index
+                        for index, operation in enumerate(operations, 1)
+                        if operation.destination.parts[0] == ".agents"
+                    )
+                    if timing == "after_family"
+                    else len(operations)
+                )
+                original_commit = distribution_lib._commit_staged_file
+                calls = 0
+
+                def moving_commit(*args: object, **kwargs: object):
+                    nonlocal calls
+                    result = original_commit(*args, **kwargs)
+                    calls += 1
+                    if calls == move_at:
+                        (target / ".agents").rename(displaced)
+                        if replacement == "recreated":
+                            existing.parent.mkdir(parents=True)
+                            # The file identity still matches; only its parent changed.
+                            distribution_lib.os.link(
+                                displaced / first.destination.relative_to(".agents"),
+                                existing,
+                            )
+                            (existing.parent / "concurrent.txt").write_text(
+                                "concurrent\n", encoding="utf-8"
+                            )
+                        elif replacement == "symlink":
+                            (target / ".agents").symlink_to(
+                                displaced, target_is_directory=True
+                            )
+                    return result
+
+                with mock.patch.object(
+                    distribution_lib, "_commit_staged_file", side_effect=moving_commit
+                ):
+                    with self.assertRaises(DistributionError) as raised:
+                        install_profile(ROOT, "frontend", target, force=True)
+
+                self.assertIn("destination", str(raised.exception))
+                self.assertEqual(len(operations), calls)
+                self.assertEqual(
+                    "local\n", (target / "local.txt").read_text(encoding="utf-8")
+                )
+                restored = displaced / first.destination.relative_to(".agents")
+                self.assertEqual("original\n", restored.read_text(encoding="utf-8"))
+                self.assertEqual(
+                    "notes\n", (displaced / "notes.txt").read_text(encoding="utf-8")
+                )
+                self.assertEqual(
+                    {first.destination.relative_to(".agents").as_posix(), "notes.txt"},
+                    {
+                        path.relative_to(displaced).as_posix()
+                        for path in displaced.rglob("*")
+                        if path.is_file()
+                    },
+                )
+                for directory in (".codex", "stack", "workflows"):
+                    self.assertFalse((target / directory).exists())
+                self.assertFalse((target / "AGENTS.md").exists())
+                if replacement == "missing":
+                    self.assertFalse((target / ".agents").exists())
+                elif replacement == "recreated":
+                    self.assertEqual(first.source.read_bytes(), existing.read_bytes())
+                    self.assertEqual(
+                        "concurrent\n",
+                        (existing.parent / "concurrent.txt").read_text(encoding="utf-8"),
+                    )
+                else:
+                    self.assertTrue((target / ".agents").is_symlink())
+
+    def test_concurrent_file_replacement_preserves_file_and_force_backup(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / "project"
+            operations = build_profile_plan(ROOT, "frontend")
+            first = operations[0]
+            existing = target / first.destination
+            existing.parent.mkdir(parents=True)
+            existing.write_text("original\n", encoding="utf-8")
+            (target / "local.txt").write_text("local\n", encoding="utf-8")
+            original_commit = distribution_lib._commit_staged_file
+            calls = 0
+
+            def replacing_commit(*args: object, **kwargs: object):
+                nonlocal calls
+                result = original_commit(*args, **kwargs)
+                calls += 1
+                if calls == len(operations):
+                    replacement = existing.with_name("concurrent.txt")
+                    replacement.write_text("concurrent\n", encoding="utf-8")
+                    replacement.replace(existing)
+                return result
+
+            with mock.patch.object(
+                distribution_lib, "_commit_staged_file", side_effect=replacing_commit
+            ):
+                with self.assertRaises(DistributionError) as raised:
+                    install_profile(ROOT, "frontend", target, force=True)
+
+            self.assertIn("destination", str(raised.exception))
+            self.assertIn("rollback incomplete", str(raised.exception))
+            self.assertEqual("concurrent\n", existing.read_text(encoding="utf-8"))
+            self.assertEqual("local\n", (target / "local.txt").read_text(encoding="utf-8"))
+            backups = list(target.rglob("*.template-backup-*"))
+            self.assertEqual(1, len(backups))
+            self.assertEqual("original\n", backups[0].read_text(encoding="utf-8"))
+            self.assertEqual(
+                {
+                    first.destination.as_posix(),
+                    backups[0].relative_to(target).as_posix(),
+                    "local.txt",
+                },
+                {
+                    path.relative_to(target).as_posix()
+                    for path in target.rglob("*")
+                    if path.is_file()
+                },
+            )
+
     def test_keyboard_interrupt_rolls_back_new_target(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / "project"

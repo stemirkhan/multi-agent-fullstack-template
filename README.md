@@ -26,7 +26,9 @@ python3 scripts/install.py --profile full --target /absolute/path/to/your-projec
 
 Replace `full` with `backend` or `frontend` for a partial install. The installer
 preflights conflicts, refuses silent overwrite, and rolls back handled write
-failures before commit. Interrupting cleanup after commit keeps the installed
+failures before commit. It verifies installed file and parent identities from
+the target root before commit and blocks completion if it detects a concurrent
+move or replacement. Interrupting cleanup after commit keeps the installed
 files and reports that state explicitly. Applying a profile currently requires
 Linux or macOS; see the [Quickstart](QUICKSTART.md) for the filesystem and
 crash-consistency limits.

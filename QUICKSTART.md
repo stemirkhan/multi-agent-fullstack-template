@@ -128,6 +128,13 @@ profile.
 
 ## Notes
 
+- Before commit, the installer reopens every destination parent from its retained
+  target-root descriptor and checks parent and file identities. Detected moves,
+  missing paths, symlinks, or replacements block completion and trigger rollback.
+  Rollback preserves concurrent replacement files and retains original backups
+  when restoration would overwrite them; the error reports an incomplete rollback.
+  These checks do not provide an atomic snapshot against continued concurrent
+  mutation, so avoid changing the target during installation.
 - Applied installs roll back handled copy and filesystem errors before commit.
   Ctrl+C before commit rolls back applied changes. Ctrl+C during cleanup after
   commit keeps installed files and reports that cleanup was interrupted; temporary
