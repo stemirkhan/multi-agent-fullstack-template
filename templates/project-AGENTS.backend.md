@@ -35,6 +35,7 @@ Backend defaults:
 - Services own use-case orchestration.
 - Write transactions go through an explicit Unit of Work.
 - Write repositories stay behind the Unit of Work; read-only use cases may use dedicated reader ports.
+- Repository ports return domain entities or application-owned result types; infrastructure adapters map ORM rows before returning across those ports.
 - Use Pydantic v2 for typed transport DTOs and settings; keep DTOs separate from ORM models and business invariants.
 - Exceptions and logging stay explicit and structured.
 - Application-layer modules must not import infrastructure implementations, ORM models, HTTP clients, or framework-specific adapters directly.

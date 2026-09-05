@@ -23,6 +23,7 @@ when a default architecture or capability changes.
 - Keep application ports narrow by capability. Split reader, writer, provider, and policy seams when responsibilities diverge.
 - Keep rich result projection on a reader or query seam rather than widening a mutation port.
 - Repositories encapsulate persistence details, receive their session from the UoW or provider, and never call `commit()`.
+- Repository ports return domain entities or application-owned result types; infrastructure adapters map ORM rows before returning across those ports.
 - Write flows use an explicit Unit of Work with truthful async entry, explicit commit, and rollback/cleanup on exit.
 - DTOs stay separate from ORM models and transport glue.
 - Use Pydantic v2 models for typed transport DTOs and settings; keep business invariants in the application or domain layer.

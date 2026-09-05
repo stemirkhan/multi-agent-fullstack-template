@@ -31,7 +31,8 @@ Use this skill when persistence logic belongs in a repository instead of in serv
 
 - Prefer business-meaningful methods such as `get_by_email`, `list_active_for_account`, `save`, `delete`.
 - Avoid generic “query builder” repositories that just expose the session indirectly.
-- Return a consistent shape: ORM entities, domain entities, or persistence models, depending on project choice.
+- Return domain entities or application-owned result types through application ports. Map ORM rows inside the infrastructure adapter; returned values must not require a live session or lazy loading.
+- Returning ORM entities across that boundary is a project-specific architecture deviation and must be explicitly recorded in the target project's local instructions.
 - Keep pagination and filtering contracts explicit.
 - Group repositories and persistence models by bounded context or query family, not by one ever-growing infrastructure file.
 - If a repository file begins to mix unrelated read models or write concerns, split it before adding another query family.
@@ -63,30 +64,54 @@ Use this skill when persistence logic belongs in a repository instead of in serv
 
 ## Example
 
+This adapter implements the `UserWriter` port in the
+[Unit of Work example](../unit-of-work/references/async-sqlalchemy-example.md).
+The domain type has no persistence dependency:
+
 ```python
-# repositories/user_repository.py
+# domain/users.py
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True, slots=True)
+class User:
+    id: int
+    email: str
+    name: str
+```
+
+Assume `UserRow` is the project's SQLAlchemy model with these fields and a
+unique constraint on `email`. The existence check supports friendly validation;
+the database constraint still protects concurrent writes.
+
+```python
+# infrastructure/persistence/users.py
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.models import User
 
-class UserRepository:
+from application.ports.users import UserWriter
+from domain.users import User
+from infrastructure.persistence.models import UserRow
+
+
+class SqlAlchemyUserWriter(UserWriter):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get_by_email(self, email: str) -> User | None:
-        result = await self._session.execute(
-            select(User).where(User.email == email)
-        )
-        return result.scalar_one_or_none()
+    async def email_exists(self, email: str) -> bool:
+        query = select(UserRow.id).where(UserRow.email == email).exists()
+        return bool(await self._session.scalar(select(query)))
 
-    async def add(self, email: str, name: str) -> User:
-        user = User(email=email, name=name)
-        self._session.add(user)
+    async def add(self, *, email: str, name: str) -> User:
+        row = UserRow(email=email, name=name)
+        self._session.add(row)
         await self._session.flush()  # get id before commit
-        return user
+        return User(id=row.id, email=row.email, name=row.name)
 ```
 
-Key points: session is injected, never created here; `commit()` is absent; `flush()` used only to get the generated id before the transaction closes.
+The UoW injects the session and owns commit/rollback. Mapping after `flush()`
+copies the generated id into a domain value that remains usable after session
+cleanup; it represents committed state only after the UoW successfully commits.
 
 ## Handoff
 
