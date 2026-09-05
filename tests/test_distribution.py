@@ -1096,6 +1096,23 @@ error_handling: []
                     }
                     self.assertEqual(expected, actual)
                     self.assertNotIn(".codex/config.toml", actual)
+                    browser_files = {
+                        path
+                        for path in actual
+                        if path.startswith(".agents/skills/agent-browser/")
+                    }
+                    self.assertEqual(
+                        {
+                            ".agents/skills/agent-browser/SKILL.md",
+                            ".agents/skills/agent-browser/LICENSE",
+                        },
+                        browser_files,
+                    )
+                    for relative in browser_files:
+                        self.assertEqual(
+                            (ROOT / relative).read_bytes(),
+                            (target / relative).read_bytes(),
+                        )
                     antislop_files = {
                         path
                         for path in actual

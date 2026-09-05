@@ -1,6 +1,7 @@
 schema_version = 1
 
 # Profiles install standalone agents and leave shared Codex configuration to users.
+# agent-browser installs a discovery stub; usage guidance comes from the installed CLI.
 
 # All profiles roll back handled failures before commit. After commit, cleanup
 # interruptions retain installed files and must be reported as committed.

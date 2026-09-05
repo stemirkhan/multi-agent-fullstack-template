@@ -127,8 +127,29 @@ npm install -g agent-browser
 agent-browser install
 ```
 
-Agents should use browser automation only when `command -v agent-browser`
-succeeds; otherwise they must fall back to code-level or manual verification.
+The copied skill follows the discovery-stub format from
+[`vercel-labs/agent-browser`](https://github.com/vercel-labs/agent-browser).
+It obtains version-matched guidance from the CLI instead of shipping a separate
+command manual and shell templates:
+
+```bash
+agent-browser skills get core
+agent-browser skills list
+```
+
+Use `agent-browser skills get core --full` only when the detailed references or
+templates are needed. Load specialized skills only when the installed CLI lists
+them and they match the task.
+
+Agents should use browser automation only when the CLI is available and
+`agent-browser skills get core` succeeds. If the command is unsupported, report
+the CLI upgrade requirement and use code-level or manual verification until
+the runtime is updated. Installing this template does not upgrade the CLI.
+
+Older target installs may retain `agent-browser/references/` and
+`agent-browser/templates/`: the installer does not prune files outside the copy
+plan, even with `--force`. The new skill no longer reads them. Review any local
+customizations before removing those obsolete directories.
 
 ## User-Scoped Skills
 

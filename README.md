@@ -360,6 +360,13 @@ systems, task scope, authorization, and read-only review boundaries. Its upstrea
 core is read only when the skill applies; no extra anti-slop modules or CLI are
 installed.
 
+The `agent-browser` skill comes from
+[`vercel-labs/agent-browser`](https://github.com/vercel-labs/agent-browser).
+It is a discovery stub: load the usage guide with `agent-browser skills get core`
+from the installed CLI, and request `--full` only when references or templates
+are needed. The copied skill includes the Apache-2.0 license and records its
+upstream commit and local compatibility adaptations in frontmatter.
+
 ## Project Templates
 
 Copy-ready project instruction files:
