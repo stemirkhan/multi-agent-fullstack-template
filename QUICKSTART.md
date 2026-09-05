@@ -100,6 +100,22 @@ Open the installed `AGENTS.md` and record the target project's real:
 
 Do not leave invented placeholder commands in project guidance.
 
+## Anti-Slop Core
+
+The `full` and `frontend` profiles include `antislop`; the `backend` profile
+does not. It packages only the core from
+[`miqdadbadjuber/anti-slop`](https://github.com/miqdadbadjuber/anti-slop), with its
+license and an unchanged upstream reference. No extra modules, plugins, or CLI
+dependencies are installed.
+
+Agents load the short integration wrapper for relevant UI, product-copy, or
+explicit visual-audit tasks, then read the upstream core as needed for that task.
+That reference adds roughly 11.8k tokens when read, rather than on every task.
+The wrapper skips the upstream installation wizard, infers the working mode
+from the request, and respects existing design systems, scope, authorization,
+and read-only reviews. It also corrects the upstream large-text contrast
+threshold to 18pt (24px), or 14pt for bold text.
+
 ## Optional Browser Automation
 
 The `agent-browser` skill is included where the profile declares it, but its CLI

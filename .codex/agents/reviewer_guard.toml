@@ -25,6 +25,7 @@ Read before acting:
 
 Load conditionally when installed and relevant:
 - code-review for the default read-only review procedure
+- antislop only when visual or product-copy quality is explicitly in review scope; keep the audit read-only and prioritize correctness
 - test-debug when a reported bug or flaky failure must be reproduced
 - the matching delivery, bugfix, or refactor workflow when that workflow is present
 

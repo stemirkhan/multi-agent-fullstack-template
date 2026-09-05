@@ -31,7 +31,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--profile",
         choices=REQUIRED_PROFILES,
         required=True,
-        help="Artifact profile to install.",
+        help="Artifact profile to install; full and frontend include the antislop core.",
     )
     parser.add_argument(
         "--target",

@@ -335,6 +335,7 @@ Frontend-oriented skills:
 - `vue`
 - `pinia`
 - `web-design-guidelines`
+- `antislop`
 - `frontend-data-access`
 - `frontend-forms-and-validation`
 
@@ -349,9 +350,15 @@ Cross-cutting skills:
 Advanced optional skills:
 - `codex-review-loop` for deeper PR, branch, or uncommitted-change audits through Codex CLI
 
-Frontend skill source:
-- the frontend skills are taken from [`antfu/skills`](https://github.com/antfu/skills)
-- they are then adapted locally to fit this repository's ownership boundaries and workflows
+Frontend skill sources:
+- the existing frontend skills originate from [`antfu/skills`](https://github.com/antfu/skills) and are adapted locally to fit this repository's ownership boundaries and workflows
+- `antislop` packages only the core from [`miqdadbadjuber/anti-slop`](https://github.com/miqdadbadjuber/anti-slop), with an unchanged upstream reference and a local integration wrapper; the `full` and `frontend` profiles include it
+
+Load `antislop` on demand for UI creation or refinement, product copy, and
+explicit visual or copy-quality audits. The wrapper preserves existing design
+systems, task scope, authorization, and read-only review boundaries. Its upstream
+core is read only when the skill applies; no extra anti-slop modules or CLI are
+installed.
 
 ## Project Templates
 

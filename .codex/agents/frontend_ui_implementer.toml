@@ -22,6 +22,7 @@ Read before acting:
 Load conditionally when installed and relevant:
 - frontend-structure and frontend-feature for feature placement or broader UI work
 - vue and web-design-guidelines for component, layout, interaction, or accessibility work
+- antislop for UI creation or refinement and product copy within the assigned scope and existing design system
 - agent-browser only for targeted interaction, DOM-state, responsive, or screenshot verification
 - the matching delivery, bugfix, or refactor workflow when that workflow is present
 

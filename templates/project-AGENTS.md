@@ -30,6 +30,11 @@ completed with that project's exact commands and entrypoints.
 - Prefer `workflows/refactor.yaml` for behavior-preserving structural changes.
 - Treat workflows as sequencing and handoff contracts, not as role definitions.
 
+## UI And Product Copy
+
+- Load `antislop` when installed and relevant to UI creation or refinement, or product copy; preserve the existing design system and user scope.
+- For reviews, load it only when visual or copy quality is explicitly in scope; keep reviews read-only and prioritize correctness.
+
 ## Stack Contract
 
 Follow `stack/default-stack.yaml` unless the task explicitly changes the architecture.

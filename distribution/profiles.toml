@@ -23,6 +23,7 @@ agents = [
 ]
 skills = [
   "agent-browser",
+  "antislop",
   "api-contracts",
   "backend-dtos",
   "backend-exceptions",
@@ -112,6 +113,7 @@ agents = [
 ]
 skills = [
   "agent-browser",
+  "antislop",
   "api-contracts",
   "code-review",
   "codex-review-loop",

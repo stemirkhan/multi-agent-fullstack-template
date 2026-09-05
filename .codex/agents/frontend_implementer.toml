@@ -24,6 +24,7 @@ Read before acting:
 Load conditionally when installed and relevant:
 - frontend-structure and frontend-feature for feature placement or broader client work
 - vue, pinia, web-design-guidelines, frontend-data-access, and frontend-forms-and-validation only for the assigned seam
+- antislop for UI creation or refinement and product copy within the assigned scope and existing design system
 - agent-browser only when code-level verification is insufficient for the requested UI flow
 - the matching delivery, bugfix, or refactor workflow when that workflow is present
 
