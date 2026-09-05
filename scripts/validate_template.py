@@ -134,7 +134,11 @@ def _parse_yaml(text: str) -> Any:
         raise RuntimeError(
             "PyYAML is required; install requirements-validation.txt"
         )
-    return yaml.load(text, Loader=_UniqueKeySafeLoader)
+    try:
+        return yaml.load(text, Loader=_UniqueKeySafeLoader)
+    except (ValueError, OverflowError) as exc:
+        # Scalar constructors (for example timestamps) can raise native errors.
+        raise yaml.YAMLError(f"invalid YAML value: {exc}") from exc
 
 
 def _load_yaml(root: Path, path: Path, issues: list[Issue]) -> Any | None:
@@ -213,24 +217,18 @@ def extract_read_before(text: str) -> tuple[str, ...]:
     return tuple(references)
 
 
-def _parse_frontmatter(text: str) -> dict[str, str] | None:
+def _parse_frontmatter(text: str) -> dict[str, Any] | None:
     lines = text.splitlines()
-    if not lines or lines[0].strip() != "---":
+    if not lines or lines[0].rstrip() != "---":
         return None
     try:
-        end = next(index for index, line in enumerate(lines[1:], 1) if line.strip() == "---")
+        end = next(index for index, line in enumerate(lines[1:], 1) if line.rstrip() == "---")
     except StopIteration:
         return None
 
-    values: dict[str, str] = {}
-    for line in lines[1:end]:
-        if not line.strip() or line.lstrip().startswith("#") or ":" not in line:
-            continue
-        key, value = line.split(":", 1)
-        value = value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-            value = value[1:-1]
-        values[key.strip()] = value
+    values = _parse_yaml("\n".join(lines[1:end]))
+    if not isinstance(values, dict) or not all(isinstance(key, str) for key in values):
+        return None
     return values
 
 
@@ -720,17 +718,19 @@ def _validate_skills(
         if text is None:
             continue
         display = _display_path(root, path)
-        frontmatter = _parse_frontmatter(text)
+        try:
+            frontmatter = _parse_frontmatter(text)
+        except YAML_PARSE_ERRORS as exc:
+            issues.append(Issue(display, f"invalid frontmatter YAML: {exc}"))
+            continue
         if frontmatter is None:
             issues.append(Issue(display, "missing or malformed frontmatter"))
             continue
-        name = frontmatter.get("name", "").strip()
-        description = frontmatter.get("description", "").strip()
-        if not name:
-            issues.append(Issue(display, "frontmatter name is required"))
+        name = _require_nonempty_string(frontmatter, "name", display, "frontmatter", issues)
+        _require_nonempty_string(frontmatter, "description", display, "frontmatter", issues)
+        if name is None:
             continue
-        if not description:
-            issues.append(Issue(display, "frontmatter description is required"))
+        name = name.strip()
         if name != path.parent.name:
             issues.append(
                 Issue(display, f"skill name {name!r} must match directory {path.parent.name!r}")
