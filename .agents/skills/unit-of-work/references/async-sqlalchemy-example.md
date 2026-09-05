@@ -76,9 +76,11 @@ class SqlAlchemyUserWriteUnitOfWork(UserWriteUnitOfWork):
             transaction = await session.begin()
             users = SqlAlchemyUserWriter(session)
         except BaseException:
-            if transaction is not None and transaction.is_active:
-                await transaction.rollback()
-            await session.close()
+            try:
+                if transaction is not None and transaction.is_active:
+                    await transaction.rollback()
+            finally:
+                await session.close()
             raise
         self._session = session
         self._transaction = transaction
